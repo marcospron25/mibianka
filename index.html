@@ -19,17 +19,38 @@
 
     .star {
       position: absolute;
-      width: 2px;
-      height: 2px;
-      background: white;
       border-radius: 50%;
-      animation: twinkle 2s infinite;
+      background: white;
       opacity: 0.8;
+      animation: twinkle 2s infinite;
     }
 
     @keyframes twinkle {
       0%, 100% { opacity: 0.8; }
       50% { opacity: 0.2; }
+    }
+
+    .shooting-star {
+      position: absolute;
+      width: 3px;
+      height: 100px;
+      background: linear-gradient(45deg, white, transparent);
+      opacity: 0;
+      border-radius: 50%;
+      pointer-events: none;
+      animation: shooting 1.5s linear infinite;
+      will-change: transform, opacity;
+    }
+
+    @keyframes shooting {
+      0% {
+        opacity: 1;
+        transform: translateX(0) translateY(0) rotate(45deg);
+      }
+      100% {
+        opacity: 0;
+        transform: translateX(500px) translateY(500px) rotate(45deg);
+      }
     }
 
     .word {
@@ -48,6 +69,7 @@
       opacity: 0;
       transform: scale(0.1);
       transition: none;
+      will-change: transform, opacity, left, top;
     }
   </style>
 </head>
@@ -68,10 +90,42 @@
 
   const vw = window.innerWidth;
   const vh = window.innerHeight;
-
   let activeWords = 0;
-  const maxActiveWords = 40;
+  const maxActiveWords = 35;
 
+  // Crear estrellas pequeñas de fondo
+  function createStars(count) {
+    for (let i = 0; i < count; i++) {
+      const star = document.createElement("div");
+      star.className = "star";
+      const size = Math.random() * 2 + 1;
+      star.style.width = size + "px";
+      star.style.height = size + "px";
+      star.style.top = Math.random() * vh + "px";
+      star.style.left = Math.random() * vw + "px";
+      star.style.animationDuration = (1 + Math.random() * 3) + "s";
+      star.style.opacity = Math.random() * 0.7 + 0.3;
+      document.body.appendChild(star);
+    }
+  }
+
+  // Crear estrellas fugaces animadas
+  function createShootingStar() {
+    const star = document.createElement("div");
+    star.className = "shooting-star";
+    star.style.top = Math.random() * vh * 0.6 + "px"; // mejor zona arriba-mitad
+    star.style.left = -100 + "px"; // inicia fuera de pantalla a la izquierda
+    star.style.animationDuration = 1 + Math.random() * 1.5 + "s";
+    document.body.appendChild(star);
+
+    // Animar y remover tras terminar para reciclar
+    star.addEventListener("animationiteration", () => {
+      star.style.top = Math.random() * vh * 0.6 + "px";
+      star.style.animationDuration = 1 + Math.random() * 1.5 + "s";
+    });
+  }
+
+  // Animar palabras
   function createWord() {
     if (activeWords >= maxActiveWords) return;
     activeWords++;
@@ -81,19 +135,26 @@
     word.innerText = phrases[Math.floor(Math.random() * phrases.length)];
     document.body.appendChild(word);
 
-    const duration = 4500 + Math.random() * 2000; // 4.5-6.5 seg
+    const duration = 4500 + Math.random() * 2500; // 4.5 - 7 seg
     const scaleMax = 2.5;
 
-    // Punto inicial: cualquier parte de la pantalla
-    const x0 = Math.random() * vw;
-    const y0 = Math.random() * vh;
+    // Decidir si la palabra sale del centro o de cualquier punto
+    // 25% probabilidad centro, 75% en cualquier punto
+    let x0, y0;
+    if (Math.random() < 0.25) {
+      x0 = vw / 2;
+      y0 = vh / 2;
+    } else {
+      x0 = Math.random() * vw;
+      y0 = Math.random() * vh;
+    }
 
     // Dirección: vector unitario aleatorio
     const angle = Math.random() * 2 * Math.PI;
     const dirX = Math.cos(angle);
     const dirY = Math.sin(angle);
 
-    // Distancia para salir más allá del borde: 1.5 veces diagonal pantalla
+    // Distancia para salir más allá del borde (1.5 veces diagonal ventana)
     const maxDist = Math.sqrt(vw*vw + vh*vh) * 1.5;
 
     // Vector desplazamiento total
@@ -139,19 +200,20 @@
     requestAnimationFrame(animate);
   }
 
+  // Lanzar palabras constantes sin saturar
   setInterval(createWord, 60);
 
-  // Estrellas de fondo
-  for (let i = 0; i < 150; i++) {
-    const star = document.createElement("div");
-    star.className = "star";
-    star.style.top = Math.random() * 100 + "vh";
-    star.style.left = Math.random() * 100 + "vw";
-    star.style.width = star.style.height = (Math.random() * 2 + 1) + "px";
-    star.style.opacity = Math.random() * 0.8 + 0.2;
-    star.style.animationDuration = 1 + Math.random() * 3 + "s";
-    document.body.appendChild(star);
-  }
+  // Crear estrellas fijas de fondo
+  createStars(150);
+
+  // Crear estrellas fugaces periódicamente
+  setInterval(createShootingStar, 800);
+
+  // Para recalcualar vw,vh en resize
+  window.addEventListener('resize', () => {
+    vw = window.innerWidth;
+    vh = window.innerHeight;
+  });
 </script>
 
 </body>
