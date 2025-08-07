@@ -36,7 +36,8 @@
       position: absolute;
       font-size: 3em;
       color: #fff;
-      font-weight: 700;
+      font-weight: 400;
+      font-style: italic;
       white-space: nowrap;
       pointer-events: none;
       user-select: none;
@@ -47,8 +48,6 @@
       opacity: 0;
       transform: scale(0.1);
       transition: none;
-      font-style: italic;
-      font-weight: 400; /* menos grueso */
     }
   </style>
 </head>
@@ -71,7 +70,7 @@
   const vh = window.innerHeight;
 
   let activeWords = 0;
-  const maxActiveWords = 12;
+  const maxActiveWords = 20;
 
   function createWord() {
     if (activeWords >= maxActiveWords) return;
@@ -82,32 +81,43 @@
     word.innerText = phrases[Math.floor(Math.random() * phrases.length)];
     document.body.appendChild(word);
 
-    const duration = 3500 + Math.random() * 1500; // 3.5 - 5 seg
+    const duration = 3000 + Math.random() * 2000; // 3-5 seg
+    const maxDist = 800;
 
-    const edge = Math.floor(Math.random() * 4);
+    // Ahora tenemos 5 posibles lugares de salida: 0=top,1=right,2=bottom,3=left,4=center
+    const edge = Math.floor(Math.random() * 5);
 
-    let x0, y0;
-    if (edge === 0) {
+    let x0, y0, dx, dy;
+
+    if (edge === 0) { // arriba
       x0 = Math.random() * vw;
       y0 = 0;
-    } else if (edge === 1) {
+      dx = (Math.random() - 0.5) * 200;
+      dy = -maxDist;
+    } else if (edge === 1) { // derecha
       x0 = vw;
       y0 = Math.random() * vh;
-    } else if (edge === 2) {
+      dx = maxDist;
+      dy = (Math.random() - 0.5) * 200;
+    } else if (edge === 2) { // abajo
       x0 = Math.random() * vw;
       y0 = vh;
-    } else {
+      dx = (Math.random() - 0.5) * 200;
+      dy = maxDist;
+    } else if (edge === 3) { // izquierda
       x0 = 0;
       y0 = Math.random() * vh;
+      dx = -maxDist;
+      dy = (Math.random() - 0.5) * 200;
+    } else { // centro
+      x0 = vw / 2;
+      y0 = vh / 2;
+
+      // Movimiento en dirección aleatoria desde el centro
+      const angle = Math.random() * 2 * Math.PI;
+      dx = Math.cos(angle) * maxDist;
+      dy = Math.sin(angle) * maxDist;
     }
-
-    let dx = 0, dy = 0;
-    const maxDist = 600;
-
-    if (edge === 0) { dx = 0; dy = -maxDist; }
-    else if (edge === 1) { dx = maxDist; dy = 0; }
-    else if (edge === 2) { dx = 0; dy = maxDist; }
-    else if (edge === 3) { dx = -maxDist; dy = 0; }
 
     let start = null;
 
@@ -145,10 +155,9 @@
     requestAnimationFrame(animate);
   }
 
-  setInterval(() => {
-    createWord();
-  }, 180);  // Ahora sale una palabra cada 180ms
+  setInterval(createWord, 150);
 
+  // Estrellas
   for (let i = 0; i < 150; i++) {
     const star = document.createElement("div");
     star.className = "star";
