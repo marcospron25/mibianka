@@ -65,7 +65,7 @@
 
     /* Estrella fugaz */
     .shooting-star {
-      position: absolute;
+      position: fixed;
       width: 3px;
       height: 80px;
       background: linear-gradient(45deg, white, rgba(255,255,255,0));
@@ -73,22 +73,24 @@
       border-radius: 50%;
       filter: drop-shadow(0 0 6px white);
       animation: shooting 1.2s linear forwards;
+      pointer-events: none;
+      z-index: 10;
     }
 
     @keyframes shooting {
       0% {
-        transform: translateX(0) translateY(0) rotate(45deg);
+        transform: translate(0, 0) rotate(45deg);
         opacity: 1;
       }
       100% {
-        transform: translateX(-100vw) translateY(100vh) rotate(45deg);
+        transform: translate(-100vw, 100vh) rotate(45deg);
         opacity: 0;
       }
     }
 
     /* Corazón fugaz */
     .shooting-heart {
-      position: absolute;
+      position: fixed;
       width: 24px;
       height: 24px;
       background: red;
@@ -100,15 +102,17 @@
       filter: drop-shadow(0 0 5px red);
       opacity: 0.9;
       animation: heartShooting 1.5s linear forwards;
+      pointer-events: none;
+      z-index: 10;
     }
 
     @keyframes heartShooting {
       0% {
-        transform: translateX(0) translateY(0) rotate(-45deg);
+        transform: translate(0, 0) rotate(-45deg);
         opacity: 1;
       }
       100% {
-        transform: translateX(100vw) translateY(100vh) rotate(-45deg);
+        transform: translate(100vw, 100vh) rotate(-45deg);
         opacity: 0;
       }
     }
@@ -157,8 +161,10 @@
   function launchShootingStar() {
     const star = document.createElement('div');
     star.className = 'shooting-star';
-    star.style.top = Math.random() * 30 + 'vh';
-    star.style.left = Math.random() * 100 + 'vw';
+
+    // Para que empiecen desde el borde superior derecho
+    star.style.top = (Math.random() * 20 + 5) + 'vh';
+    star.style.left = '100vw';
 
     document.body.appendChild(star);
     star.addEventListener('animationend', () => star.remove());
@@ -168,8 +174,10 @@
   function launchShootingHeart() {
     const heart = document.createElement('div');
     heart.className = 'shooting-heart';
-    heart.style.top = Math.random() * 30 + 'vh';
-    heart.style.left = Math.random() * 100 + 'vw';
+
+    // Para que empiecen desde borde superior izquierdo
+    heart.style.top = (Math.random() * 20 + 5) + 'vh';
+    heart.style.left = '-30px'; // afuera a la izquierda
 
     document.body.appendChild(heart);
     heart.addEventListener('animationend', () => heart.remove());
@@ -188,4 +196,5 @@
 
 </body>
 </html>
+
 
