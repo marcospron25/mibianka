@@ -13,37 +13,34 @@
       overflow: hidden;
       font-family: 'Dancing Script', cursive;
       color: white;
-      perspective: 1000px;
       position: relative;
     }
 
     .word {
       position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%) translateZ(-1000px);
       font-size: 3em;
       color: #ffffff;
       font-style: italic;
       opacity: 0;
       white-space: nowrap;
       text-shadow: 0 0 10px #ffffffaa;
-      animation: flyToFront 2.5s ease-out forwards;
+      transform: translate(-50%, -50%) scale(0.2);
+      animation: flyToCenter 2.5s ease-out forwards;
     }
 
-    @keyframes flyToFront {
+    @keyframes flyToCenter {
       0% {
-        transform: translate(-50%, -50%) translateZ(-1000px);
+        transform: translate(var(--xStart), var(--yStart)) scale(0.2);
         opacity: 0;
       }
-      30% {
+      40% {
         opacity: 1;
       }
       90% {
         opacity: 1;
       }
       100% {
-        transform: translate(-50%, -50%) translateZ(300px);
+        transform: translate(-50%, -50%) scale(8);
         opacity: 0;
       }
     }
@@ -62,24 +59,45 @@
       0%, 100% { opacity: 0.5; }
       50% { opacity: 0.1; }
     }
+
+    .shooting-star {
+      position: absolute;
+      width: 2px;
+      height: 2px;
+      background: white;
+      box-shadow: 0 0 6px white;
+      border-radius: 50%;
+      opacity: 0.8;
+      animation: shooting 1.5s linear forwards;
+    }
+
+    @keyframes shooting {
+      0% {
+        transform: translate(0, 0) scale(1);
+        opacity: 1;
+      }
+      100% {
+        transform: translate(-600px, 600px) scale(0);
+        opacity: 0;
+      }
+    }
   </style>
 </head>
 <body>
 
 <script>
   const phrases = [
-    "Te Amo",
-    "My love",
-    "Eres preciosa",
-    "Me encantas",
-    "Amor de mi vida",
-    "Reina hermosa",
-    "Mi niña",
-    "Mi consentida",
-    "Mi Biankita"
+    "Te Amo", "My love", "Eres preciosa", "Me encantas",
+    "Amor de mi vida", "Reina hermosa", "Mi niña",
+    "Mi consentida", "Mi Biankita"
   ];
 
-  // Crear estrellas de fondo
+  const vw = window.innerWidth;
+  const vh = window.innerHeight;
+  const centerX = vw / 2;
+  const centerY = vh / 2;
+
+  // Estrellas estáticas
   for (let i = 0; i < 100; i++) {
     const star = document.createElement('div');
     star.className = 'star';
@@ -89,26 +107,59 @@
     document.body.appendChild(star);
   }
 
-  // Crear palabras desde el fondo hacia ti
-  function launchWord() {
+  // Palabras volando al centro
+  function createWord() {
     const word = document.createElement('div');
     word.className = 'word';
     word.innerText = phrases[Math.floor(Math.random() * phrases.length)];
 
-    // Posición aleatoria en pantalla (pero visualmente recta hacia adelante)
-    word.style.top = (Math.random() * 100) + 'vh';
-    word.style.left = (Math.random() * 100) + 'vw';
+    const edge = Math.floor(Math.random() * 8); // 8 direcciones
+    let xStart = 0, yStart = 0;
+
+    switch (edge) {
+      case 0: xStart = Math.random() * vw; yStart = -100; break;
+      case 1: xStart = vw + 100; yStart = -100; break;
+      case 2: xStart = vw + 100; yStart = Math.random() * vh; break;
+      case 3: xStart = vw + 100; yStart = vh + 100; break;
+      case 4: xStart = Math.random() * vw; yStart = vh + 100; break;
+      case 5: xStart = -100; yStart = vh + 100; break;
+      case 6: xStart = -100; yStart = Math.random() * vh; break;
+      case 7: xStart = -100; yStart = -100; break;
+    }
+
+    const xOffset = `${xStart - centerX}px`;
+    const yOffset = `${yStart - centerY}px`;
+
+    word.style.setProperty('--xStart', xOffset);
+    word.style.setProperty('--yStart', yOffset);
+
+    word.style.left = `${centerX}px`;
+    word.style.top = `${centerY}px`;
 
     document.body.appendChild(word);
 
-    // Remover después de la animación
-    setTimeout(() => word.remove(), 2500);
+    setTimeout(() => word.remove(), 3000);
   }
 
-  // Lanzar palabras continuamente
-  setInterval(launchWord, 100); // Controla cuántas salen
+  // Estrellas fugaces aleatorias
+  function createShootingStar() {
+    const star = document.createElement('div');
+    star.className = 'shooting-star';
+    star.style.top = Math.random() * vh + 'px';
+    star.style.left = (vw + 100) + 'px';
+    document.body.appendChild(star);
+
+    setTimeout(() => star.remove(), 1600);
+  }
+
+  // Intervalos
+  setInterval(createWord, 100); // Palabras
+  setInterval(() => {
+    if (Math.random() < 0.3) createShootingStar(); // Estrellas fugaces aleatorias
+  }, 600);
 </script>
 
 </body>
 </html>
+
 
