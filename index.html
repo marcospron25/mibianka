@@ -81,46 +81,24 @@
     word.innerText = phrases[Math.floor(Math.random() * phrases.length)];
     document.body.appendChild(word);
 
-    // Duración total animación
-    const duration = 5000 + Math.random() * 2000; // 5-7 seg
+    const duration = 4500 + Math.random() * 2000; // 4.5-6.5 seg
     const scaleMax = 2.5;
 
-    // 5 lugares posibles: 0=top,1=right,2=bottom,3=left,4=center
-    const edge = Math.floor(Math.random() * 5);
+    // Punto inicial: cualquier parte de la pantalla
+    const x0 = Math.random() * vw;
+    const y0 = Math.random() * vh;
 
-    let x0, y0, dx, dy;
+    // Dirección: vector unitario aleatorio
+    const angle = Math.random() * 2 * Math.PI;
+    const dirX = Math.cos(angle);
+    const dirY = Math.sin(angle);
 
-    // Distancia para salir más allá del borde (un poco más que vw/vh)
-    const maxDistX = vw + 200;
-    const maxDistY = vh + 200;
+    // Distancia para salir más allá del borde: 1.5 veces diagonal pantalla
+    const maxDist = Math.sqrt(vw*vw + vh*vh) * 1.5;
 
-    if (edge === 0) { // arriba
-      x0 = Math.random() * vw;
-      y0 = 0;
-      dx = (Math.random() - 0.5) * 400;
-      dy = -maxDistY;
-    } else if (edge === 1) { // derecha
-      x0 = vw;
-      y0 = Math.random() * vh;
-      dx = maxDistX;
-      dy = (Math.random() - 0.5) * 400;
-    } else if (edge === 2) { // abajo
-      x0 = Math.random() * vw;
-      y0 = vh;
-      dx = (Math.random() - 0.5) * 400;
-      dy = maxDistY;
-    } else if (edge === 3) { // izquierda
-      x0 = 0;
-      y0 = Math.random() * vh;
-      dx = -maxDistX;
-      dy = (Math.random() - 0.5) * 400;
-    } else { // centro
-      x0 = vw / 2;
-      y0 = vh / 2;
-      const angle = Math.random() * 2 * Math.PI;
-      dx = Math.cos(angle) * Math.max(maxDistX, maxDistY);
-      dy = Math.sin(angle) * Math.max(maxDistX, maxDistY);
-    }
+    // Vector desplazamiento total
+    const dx = dirX * maxDist;
+    const dy = dirY * maxDist;
 
     let start = null;
 
@@ -134,19 +112,15 @@
       const elapsed = timestamp - start;
       const progress = Math.min(elapsed / duration, 1);
 
-      // Posición actual (lineal del punto inicial hacia fuera pasando el borde)
       const x = x0 + dx * progress;
       const y = y0 + dy * progress;
-
-      // Escala de pequeño a grande (0.1 a scaleMax)
       const scale = 0.1 + (scaleMax - 0.1) * progress;
 
-      // Opacidad: sube rápido y luego baja al final
       let opacity;
       if (progress < 0.7) {
-        opacity = progress / 0.7; // sube a 1
+        opacity = progress / 0.7;
       } else {
-        opacity = 1 - (progress - 0.7) / 0.3; // baja a 0
+        opacity = 1 - (progress - 0.7) / 0.3;
       }
 
       word.style.left = `${x}px`;
@@ -182,3 +156,4 @@
 
 </body>
 </html>
+
