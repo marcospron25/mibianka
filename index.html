@@ -34,9 +34,9 @@
 
     .word {
       position: absolute;
-      font-size: 3em; /* más grande */
+      font-size: 3em;
       color: #fff;
-      font-family: 'Dancing Script', cursive; /* fuente cursiva y bonita */
+      font-family: 'Dancing Script', cursive;
       font-weight: 700;
       white-space: nowrap;
       pointer-events: none;
@@ -50,6 +50,8 @@
       text-shadow:
         0 0 5px rgba(255,255,255,0.8),
         0 0 10px rgba(255,255,255,0.6);
+      opacity: 0;
+      transform: translate(-50%, -50%) scale(0.1);
     }
   </style>
 </head>
@@ -72,14 +74,13 @@
     const word = document.createElement("div");
     word.className = "word";
     word.innerText = phrases[Math.floor(Math.random() * phrases.length)];
-
-    word.style.transform = "translate(-50%, -50%) scale(1)";
     document.body.appendChild(word);
 
-    const duration = 2000 + Math.random() * 1500; // más rápido: 2 - 3.5 segundos
+    const duration = 3000 + Math.random() * 2000; // 3-5 segundos
 
+    // Movimiento aleatorio desde centro (pequeño desplazamiento para dispersar un poco)
     const angle = Math.random() * 2 * Math.PI;
-    const maxDistance = Math.min(window.innerWidth, window.innerHeight) / 2 + 150;
+    const maxOffset = 200;
 
     let start = null;
     function animate(timestamp) {
@@ -87,38 +88,20 @@
       const elapsed = timestamp - start;
       const progress = Math.min(elapsed / duration, 1);
 
-      const translateX = Math.cos(angle) * maxDistance * progress;
-      const translateY = Math.sin(angle) * maxDistance * progress;
+      // Escala crece de 0.1 a 1.5 para simular acercamiento
+      const scale = 0.1 + 1.4 * progress;
 
-      const scale = 1 - 0.8 * progress;
-      const opacity = 1 - progress;
-
-      word.style.transform = `translate(calc(-50% + ${translateX}px), calc(-50% + ${translateY}px)) scale(${scale})`;
-      word.style.opacity = opacity;
-
-      if (progress < 1) {
-        requestAnimationFrame(animate);
+      // Opacidad va de 0 a 1 y luego desaparece al final
+      let opacity;
+      if (progress < 0.8) {
+        opacity = progress / 0.8; // 0 a 1
       } else {
-        word.remove();
+        opacity = 1 - (progress - 0.8) / 0.2; // 1 a 0
       }
-    }
 
-    requestAnimationFrame(animate);
-  }
+      // Pequeña dispersión lateral para que no se superpongan todas justo en el centro
+      const offsetX = Math.cos(angle) * maxOffset * (1 - progress);
+      const offsetY = Math.sin(angle) * maxOffset * (1 - progress);
 
-  setInterval(createWord, 500); // palabras salen un poco más rápido
-
-  for (let i = 0; i < 150; i++) {
-    const star = document.createElement("div");
-    star.className = "star";
-    star.style.top = Math.random() * 100 + "vh";
-    star.style.left = Math.random() * 100 + "vw";
-    star.style.width = star.style.height = (Math.random() * 2 + 1) + "px";
-    star.style.opacity = Math.random() * 0.8 + 0.2;
-    star.style.animationDuration = 1 + Math.random() * 3 + "s";
-    document.body.appendChild(star);
-  }
-</script>
-
-</body>
-</html>
+      // Aplicar transform con desplazamiento y escala
+      word.style.transform = `translate(calc(-50% + ${offsetX}px), calc(-50% + ${offsetY}px)) scale($
