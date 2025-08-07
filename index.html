@@ -11,10 +11,10 @@
       overflow: hidden;
       height: 100vh;
       background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
-      font-family: 'Arial', sans-serif;
+      font-family: 'Dancing Script', cursive;
       color: white;
       position: relative;
-      perspective: 1000px; /* perspectiva 3D para translateZ */
+      perspective: 800px; /* mantiene la sensación de profundidad */
     }
 
     .star {
@@ -36,21 +36,18 @@
       position: absolute;
       font-size: 3em;
       color: #fff;
-      font-family: 'Dancing Script', cursive;
       font-weight: 700;
       white-space: nowrap;
       pointer-events: none;
       user-select: none;
       left: 50%;
       top: 50%;
-      transform-style: preserve-3d;
       transform-origin: center center;
       text-shadow:
         0 0 5px rgba(255,255,255,0.8),
         0 0 10px rgba(255,255,255,0.6);
       opacity: 0;
-      /* inicia pequeño y alejado en Z */
-      transform: translate(-50%, -50%) translateZ(-800px) scale(0.1);
+      transform: translate(-50%, -50%) scale(0.1);
       transition: none;
     }
   </style>
@@ -78,9 +75,9 @@
 
     const duration = 3500 + Math.random() * 1500; // 3.5 - 5 seg
 
-    // Movimiento lateral random pequeño para que no salgan exacto centro
+    // Random angle para dispersar salida (en círculo)
     const angle = Math.random() * 2 * Math.PI;
-    const radius = 100; // radio de dispersión lateral
+    const maxDistance = 600; // distancia máxima que puede alcanzar la palabra
 
     let start = null;
     function animate(timestamp) {
@@ -88,30 +85,25 @@
       const elapsed = timestamp - start;
       const progress = Math.min(elapsed / duration, 1);
 
-      // Eje Z: de -800px (lejos) a +600px (muy cerca y fuera de pantalla)
-      const z = -800 + 1400 * progress;
+      // La palabra empieza en el centro (escala 0.1, opacidad 0)
+      // y se mueve hacia afuera en línea recta, escala aumenta a 2.5 y opacidad sube y luego baja
 
-      // Escala proporcional a la distancia Z (más cerca = más grande)
-      // scale = entre 0.1 (lejano) a 2.5 (muy cerca)
+      // Posición x,y se desplaza en dirección del ángulo, de 0 a maxDistance px
+      const x = Math.cos(angle) * maxDistance * progress;
+      const y = Math.sin(angle) * maxDistance * progress;
+
+      // Escala aumenta de 0.1 a 2.5 para simular acercamiento
       const scale = 0.1 + 2.4 * progress;
 
-      // Opacidad: empieza transparente, se hace visible y luego desaparece al final
+      // Opacidad: sube de 0 a 1 y baja a 0 al final
       let opacity;
-      if (progress < 0.85) {
-        opacity = progress / 0.85; // 0 a 1
+      if (progress < 0.8) {
+        opacity = progress / 0.8;
       } else {
-        opacity = 1 - (progress - 0.85) / 0.15; // 1 a 0
+        opacity = 1 - (progress - 0.8) / 0.2;
       }
 
-      // Desplazamiento lateral pequeño para que aparezcan dispersas (dispersión disminuye con progreso)
-      const offsetX = Math.cos(angle) * radius * (1 - progress);
-      const offsetY = Math.sin(angle) * radius * (1 - progress);
-
-      word.style.transform = `
-        translate(calc(-50% + ${offsetX}px), calc(-50% + ${offsetY}px))
-        translateZ(${z}px)
-        scale(${scale})
-      `;
+      word.style.transform = `translate(calc(-50% + ${x}px), calc(-50% + ${y}px)) scale(${scale})`;
       word.style.opacity = opacity;
 
       if (progress < 1) {
@@ -146,3 +138,4 @@
 
 </body>
 </html>
+
