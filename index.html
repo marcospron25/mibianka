@@ -14,7 +14,7 @@
       font-family: 'Dancing Script', cursive;
       color: white;
       position: relative;
-      perspective: 800px; /* mantiene la sensación de profundidad */
+      perspective: 800px;
     }
 
     .star {
@@ -40,14 +40,12 @@
       white-space: nowrap;
       pointer-events: none;
       user-select: none;
-      left: 50%;
-      top: 50%;
       transform-origin: center center;
       text-shadow:
         0 0 5px rgba(255,255,255,0.8),
         0 0 10px rgba(255,255,255,0.6);
       opacity: 0;
-      transform: translate(-50%, -50%) scale(0.1);
+      transform: scale(0.1);
       transition: none;
     }
   </style>
@@ -67,6 +65,10 @@
     "Mi Biankita"
   ];
 
+  // Obtener tamaño de ventana
+  const vw = window.innerWidth;
+  const vh = window.innerHeight;
+
   function createWord() {
     const word = document.createElement("div");
     word.className = "word";
@@ -75,35 +77,64 @@
 
     const duration = 3500 + Math.random() * 1500; // 3.5 - 5 seg
 
-    // Random angle para dispersar salida (en círculo)
-    const angle = Math.random() * 2 * Math.PI;
-    const maxDistance = 600; // distancia máxima que puede alcanzar la palabra
+    // Elegir borde aleatorio: 0=top,1=right,2=bottom,3=left
+    const edge = Math.floor(Math.random() * 4);
+
+    // Punto inicial (x0,y0) según borde
+    let x0, y0;
+    if (edge === 0) { // arriba
+      x0 = Math.random() * vw;
+      y0 = 0;
+    } else if (edge === 1) { // derecha
+      x0 = vw;
+      y0 = Math.random() * vh;
+    } else if (edge === 2) { // abajo
+      x0 = Math.random() * vw;
+      y0 = vh;
+    } else { // izquierda
+      x0 = 0;
+      y0 = Math.random() * vh;
+    }
+
+    // Vector de movimiento hacia afuera (para que salga de pantalla)
+    // Se calcula para que se mueva en la misma dirección del borde (hacia fuera)
+    // Ejemplo: si está arriba, sale hacia arriba, etc.
+    let dx = 0, dy = 0;
+    const maxDist = 600; // distancia que recorrerá la palabra
+
+    if (edge === 0) { dx = 0; dy = -maxDist; }
+    else if (edge === 1) { dx = maxDist; dy = 0; }
+    else if (edge === 2) { dx = 0; dy = maxDist; }
+    else if (edge === 3) { dx = -maxDist; dy = 0; }
 
     let start = null;
+
+    // Colocar la palabra en el punto inicial
+    word.style.left = `${x0}px`;
+    word.style.top = `${y0}px`;
+    word.style.transform = `translate(-50%, -50%) scale(0.1)`;
+    word.style.opacity = 0;
+
     function animate(timestamp) {
       if (!start) start = timestamp;
       const elapsed = timestamp - start;
       const progress = Math.min(elapsed / duration, 1);
 
-      // La palabra empieza en el centro (escala 0.1, opacidad 0)
-      // y se mueve hacia afuera en línea recta, escala aumenta a 2.5 y opacidad sube y luego baja
+      // Posición actual
+      const x = x0 + dx * progress;
+      const y = y0 + dy * progress;
 
-      // Posición x,y se desplaza en dirección del ángulo, de 0 a maxDistance px
-      const x = Math.cos(angle) * maxDistance * progress;
-      const y = Math.sin(angle) * maxDistance * progress;
-
-      // Escala aumenta de 0.1 a 2.5 para simular acercamiento
+      // Escala crece de 0.1 a 2.5 para acercamiento
       const scale = 0.1 + 2.4 * progress;
 
-      // Opacidad: sube de 0 a 1 y baja a 0 al final
+      // Opacidad sube y luego baja
       let opacity;
-      if (progress < 0.8) {
-        opacity = progress / 0.8;
-      } else {
-        opacity = 1 - (progress - 0.8) / 0.2;
-      }
+      if (progress < 0.8) opacity = progress / 0.8;
+      else opacity = 1 - (progress - 0.8) / 0.2;
 
-      word.style.transform = `translate(calc(-50% + ${x}px), calc(-50% + ${y}px)) scale(${scale})`;
+      word.style.left = `${x}px`;
+      word.style.top = `${y}px`;
+      word.style.transform = `translate(-50%, -50%) scale(${scale})`;
       word.style.opacity = opacity;
 
       if (progress < 1) {
@@ -116,14 +147,12 @@
     requestAnimationFrame(animate);
   }
 
-  // Lanzar montones de palabras rápido
+  // Intervalo para lanzar palabras rápidas pero pocas al mismo tiempo
   setInterval(() => {
-    for(let i = 0; i < 6; i++) {  // 6 palabras a la vez
-      createWord();
-    }
-  }, 350); // cada 350ms salen 6 palabras
+    createWord();
+  }, 450); // cada 450ms sale una palabra
 
-  // Crear estrellas de fondo
+  // Estrellas de fondo
   for (let i = 0; i < 150; i++) {
     const star = document.createElement("div");
     star.className = "star";
