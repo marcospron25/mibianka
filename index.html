@@ -84,7 +84,7 @@
     const duration = 3000 + Math.random() * 2000; // 3-5 seg
     const maxDist = 800;
 
-    // Ahora tenemos 5 posibles lugares de salida: 0=top,1=right,2=bottom,3=left,4=center
+    // 5 posibles lugares de salida: 0=top,1=right,2=bottom,3=left,4=center
     const edge = Math.floor(Math.random() * 5);
 
     let x0, y0, dx, dy;
@@ -109,11 +109,11 @@
       y0 = Math.random() * vh;
       dx = -maxDist;
       dy = (Math.random() - 0.5) * 200;
-    } else { // centro
-      x0 = vw / 2;
-      y0 = vh / 2;
+    } else { // centro con dispersión ±50px
+      const dispersion = 50;
+      x0 = vw / 2 + (Math.random() - 0.5) * dispersion * 2;
+      y0 = vh / 2 + (Math.random() - 0.5) * dispersion * 2;
 
-      // Movimiento en dirección aleatoria desde el centro
       const angle = Math.random() * 2 * Math.PI;
       dx = Math.cos(angle) * maxDist;
       dy = Math.sin(angle) * maxDist;
@@ -155,9 +155,10 @@
     requestAnimationFrame(animate);
   }
 
-  setInterval(createWord, 40);
+  // Intervalo para crear palabras mientras no sobrepase el límite máximo
+  setInterval(createWord, 60);
 
-  // Estrellas
+  // Estrellas de fondo
   for (let i = 0; i < 150; i++) {
     const star = document.createElement("div");
     star.className = "star";
