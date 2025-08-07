@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <title>Te Amo 🌙✨ - Efecto Warp</title>
+  <title>Palabras chocando al centro</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Dancing+Script&display=swap');
 
@@ -32,7 +32,6 @@
         0 0 20px #00ffff;
       opacity: 0;
       transform: scale(0.1);
-      transition: none;
       will-change: transform, opacity, left, top;
     }
   </style>
@@ -54,31 +53,24 @@
 
   let vw = window.innerWidth;
   let vh = window.innerHeight;
+  let centerX = vw / 2;
+  let centerY = vh / 2;
   let activeWords = 0;
-  const maxActiveWords = 40;
+  const maxActiveWords = 70;
 
-  // Función para generar un punto de origen con mayor densidad cerca del centro
-  function generateStartPoint() {
-    // Distribución radial con más probabilidad cerca del centro
-    // Método: polar coordinates con radio elevado para densidad centrada
-    const centerX = vw / 2;
-    const centerY = vh / 2;
-
-    // Radio máximo desde el centro a cualquier esquina (diagonal)
-    const maxRadius = Math.sqrt(centerX*centerX + centerY*centerY);
-
-    // Generamos un radio con distribución que da más peso a puntos cercanos al centro
-    // Usamos potencia 0.3 para que la mayoría quede cerca del centro
-    const r = Math.pow(Math.random(), 0.3) * maxRadius;
-
-    // Ángulo aleatorio completo
-    const theta = Math.random() * 2 * Math.PI;
-
-    // Coordenadas cartesianas
-    const x = centerX + r * Math.cos(theta);
-    const y = centerY + r * Math.sin(theta);
-
-    return {x, y};
+  // Genera un punto en el borde (arriba, derecha, abajo, izquierda)
+  function randomBorderPoint() {
+    const edge = Math.floor(Math.random() * 4);
+    switch(edge) {
+      case 0: // arriba
+        return {x: Math.random() * vw, y: 0};
+      case 1: // derecha
+        return {x: vw, y: Math.random() * vh};
+      case 2: // abajo
+        return {x: Math.random() * vw, y: vh};
+      case 3: // izquierda
+        return {x: 0, y: Math.random() * vh};
+    }
   }
 
   function createWord() {
@@ -90,37 +82,21 @@
     word.innerText = phrases[Math.floor(Math.random() * phrases.length)];
     document.body.appendChild(word);
 
-    const duration = 3500 + Math.random() * 2500; // 3.5 - 6 seg
+    const duration = 3500 + Math.random() * 2000; // 3.5 - 5.5 seg
     const scaleMax = 2.5;
 
-    // Origen
-    const {x: x0, y: y0} = generateStartPoint();
+    // Origen en el borde
+    const {x: x0, y: y0} = randomBorderPoint();
 
-    // Vector desde el centro hacia el punto de origen
-    const centerX = vw / 2;
-    const centerY = vh / 2;
+    // Vector dirección hacia el centro
+    const dx = centerX - x0;
+    const dy = centerY - y0;
+    const len = Math.sqrt(dx*dx + dy*dy);
+    const dirX = dx / len;
+    const dirY = dy / len;
 
-    // Dirección: vector que apunta desde el punto de origen hacia afuera, en línea recta desde el centro
-    let dirX = x0 - centerX;
-    let dirY = y0 - centerY;
-
-    // Normalizamos vector dirección
-    const len = Math.sqrt(dirX*dirX + dirY*dirY);
-    // Para evitar división por cero si está en el centro, damos dirección aleatoria
-    if(len === 0) {
-      const angle = Math.random() * 2 * Math.PI;
-      dirX = Math.cos(angle);
-      dirY = Math.sin(angle);
-    } else {
-      dirX /= len;
-      dirY /= len;
-    }
-
-    // Distancia para que salga más allá de la pantalla (1.8 veces diagonal)
-    const maxDist = Math.sqrt(vw*vw + vh*vh) * 1.8;
-
-    const dx = dirX * maxDist;
-    const dy = dirY * maxDist;
+    // Distancia para llegar al centro y pasar un poco más (para desaparecer)
+    const maxDist = len + 200;
 
     let start = null;
 
@@ -134,12 +110,12 @@
       const elapsed = timestamp - start;
       const progress = Math.min(elapsed / duration, 1);
 
-      // Posición animada
-      const x = x0 + dx * progress;
-      const y = y0 + dy * progress;
+      // Posición moviéndose hacia el centro + 200 px más allá
+      const x = x0 + dirX * maxDist * progress;
+      const y = y0 + dirY * maxDist * progress;
       const scale = 0.1 + (scaleMax - 0.1) * progress;
 
-      // Opacidad con fade in y fade out suave
+      // Opacidad: fade in y fade out suave
       let opacity;
       if (progress < 0.6) {
         opacity = progress / 0.6;
@@ -163,13 +139,13 @@
     requestAnimationFrame(animate);
   }
 
-  // Crear palabras constantemente
-  setInterval(createWord, 50);
+  setInterval(createWord, 30);
 
-  // Ajustar viewport en resize
   window.addEventListener('resize', () => {
     vw = window.innerWidth;
     vh = window.innerHeight;
+    centerX = vw / 2;
+    centerY = vh / 2;
   });
 </script>
 
