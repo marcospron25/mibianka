@@ -13,34 +13,37 @@
       overflow: hidden;
       font-family: 'Dancing Script', cursive;
       color: white;
+      perspective: 1000px;
       position: relative;
     }
 
     .word {
       position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) translateZ(-1000px);
       font-size: 3em;
       color: #ffffff;
       font-style: italic;
       opacity: 0;
       white-space: nowrap;
       text-shadow: 0 0 10px #ffffffaa;
-      transform: translate(-50%, -50%) scale(0.5);
-      animation: flyToCenter 2.5s ease-out forwards;
+      animation: flyToFront 2.5s ease-out forwards;
     }
 
-    @keyframes flyToCenter {
+    @keyframes flyToFront {
       0% {
-        transform: translate(var(--xStart), var(--yStart)) scale(0.5);
+        transform: translate(-50%, -50%) translateZ(-1000px);
         opacity: 0;
       }
-      40% {
+      30% {
         opacity: 1;
       }
       90% {
         opacity: 1;
       }
       100% {
-        transform: translate(-50%, -50%) scale(6);
+        transform: translate(-50%, -50%) translateZ(300px);
         opacity: 0;
       }
     }
@@ -65,15 +68,16 @@
 
 <script>
   const phrases = [
-    "Te Amo", "My love", "Eres preciosa", "Me encantas",
-    "Amor de mi vida", "Reina hermosa", "Mi niña",
-    "Mi consentida", "Mi Biankita"
+    "Te Amo",
+    "My love",
+    "Eres preciosa",
+    "Me encantas",
+    "Amor de mi vida",
+    "Reina hermosa",
+    "Mi niña",
+    "Mi consentida",
+    "Mi Biankita"
   ];
-
-  const vw = window.innerWidth;
-  const vh = window.innerHeight;
-  const centerX = vw / 2;
-  const centerY = vh / 2;
 
   // Crear estrellas de fondo
   for (let i = 0; i < 100; i++) {
@@ -85,44 +89,26 @@
     document.body.appendChild(star);
   }
 
-  // Crear palabra desde borde hacia el centro
-  function createWord() {
+  // Crear palabras desde el fondo hacia ti
+  function launchWord() {
     const word = document.createElement('div');
     word.className = 'word';
     word.innerText = phrases[Math.floor(Math.random() * phrases.length)];
 
-    const edge = Math.floor(Math.random() * 8); // 8 direcciones: N, NE, E, SE, S, SW, W, NW
-    let xStart = 0, yStart = 0;
-
-    switch (edge) {
-      case 0: xStart = Math.random() * vw; yStart = -100; break; // Top
-      case 1: xStart = vw + 100; yStart = -100; break; // Top-Right
-      case 2: xStart = vw + 100; yStart = Math.random() * vh; break; // Right
-      case 3: xStart = vw + 100; yStart = vh + 100; break; // Bottom-Right
-      case 4: xStart = Math.random() * vw; yStart = vh + 100; break; // Bottom
-      case 5: xStart = -100; yStart = vh + 100; break; // Bottom-Left
-      case 6: xStart = -100; yStart = Math.random() * vh; break; // Left
-      case 7: xStart = -100; yStart = -100; break; // Top-Left
-    }
-
-    const xOffset = `${xStart - centerX}px`;
-    const yOffset = `${yStart - centerY}px`;
-
-    word.style.setProperty('--xStart', xOffset);
-    word.style.setProperty('--yStart', yOffset);
-
-    word.style.left = `${centerX}px`;
-    word.style.top = `${centerY}px`;
+    // Posición aleatoria en pantalla (pero visualmente recta hacia adelante)
+    word.style.top = (Math.random() * 100) + 'vh';
+    word.style.left = (Math.random() * 100) + 'vw';
 
     document.body.appendChild(word);
 
-    // Eliminar después de animar
-    setTimeout(() => word.remove(), 2600);
+    // Remover después de la animación
+    setTimeout(() => word.remove(), 2500);
   }
 
   // Lanzar palabras continuamente
-  setInterval(createWord, 100);
+  setInterval(launchWord, 100); // Controla cuántas salen
 </script>
 
 </body>
 </html>
+
