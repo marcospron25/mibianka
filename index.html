@@ -1,155 +1,50 @@
 <!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8" />
-  <title>Palabras chocando al centro</title>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Dancing+Script&display=swap');
+<html lang="es"><head><meta charset="UTF-8"/><title>Centro Explosión Palabras</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Dancing+Script&display=swap');
+  body { margin:0; overflow:hidden; height:100vh; background:#001020; font-family:'Dancing Script', cursive; color:white; }
+  .word { position:absolute; font-size:3em; color:#00ffff; font-style:italic; opacity:0; transform:scale(0.1); text-shadow:0 0 10px #00ffff; will-change:left,top,opacity,transform; }
+</style></head><body><script>
+const phrases=["Te Amo","My love","Eres preciosa","Me encantas","Amor de mi vida","Reina hermosa","mi niña","mi consentida","Mi Biankita"];
+let vw=window.innerWidth, vh=window.innerHeight, centerX=vw/2, centerY=vh/2;
+let active=0, maxActive=50;
 
-    body {
-      margin: 0;
-      overflow: hidden;
-      height: 100vh;
-      background: radial-gradient(ellipse at center, #001020 0%, #000000 80%);
-      font-family: 'Dancing Script', cursive;
-      color: white;
-      position: relative;
-      perspective: 800px;
-    }
+function createWord(){
+  if(active>=maxActive) return;
+  active++;
+  const w=document.createElement("div"); w.className="word";
+  w.textContent=phrases[Math.floor(Math.random()*phrases.length)];
+  document.body.appendChild(w);
 
-    .word {
-      position: absolute;
-      font-size: 3em;
-      color: #00ffff;
-      font-weight: 600;
-      font-style: italic;
-      white-space: nowrap;
-      pointer-events: none;
-      user-select: none;
-      transform-origin: center center;
-      text-shadow:
-        0 0 10px #00ffff,
-        0 0 20px #00ffff;
-      opacity: 0;
-      transform: scale(0.1);
-      will-change: transform, opacity, left, top;
-    }
-  </style>
-</head>
-<body>
+  const dur=3000+Math.random()*2000, scaleMax=2.5;
+  // Punto de origen: siempre desde centro con pequeña dispersión ±30px
+  const x0=centerX+(Math.random()-0.5)*60;
+  const y0=centerY+(Math.random()-0.5)*60;
+  // Dirección radial variable
+  const angle=Math.random()*Math.PI*2;
+  const dx=Math.cos(angle), dy=Math.sin(angle);
+  const dist=Math.sqrt(vw*vw+vh*vh)*1.2;
+  
+  let start=null;
+  w.style.left=`${x0}px`; w.style.top=`${y0}px`;
 
-<script>
-  const phrases = [
-    "Te Amo",
-    "My love",
-    "Eres preciosa",
-    "Me encantas",
-    "Amor de mi vida",
-    "Reina hermosa",
-    "mi niña",
-    "mi consentida",
-    "Mi Biankita"
-  ];
-
-  let vw = window.innerWidth;
-  let vh = window.innerHeight;
-  let centerX = vw / 2;
-  let centerY = vh / 2;
-  let activeWords = 0;
-  const maxActiveWords = 70;
-
-  // Genera un punto en el borde (arriba, derecha, abajo, izquierda)
-  function randomBorderPoint() {
-    const edge = Math.floor(Math.random() * 4);
-    switch(edge) {
-      case 0: // arriba
-        return {x: Math.random() * vw, y: 0};
-      case 1: // derecha
-        return {x: vw, y: Math.random() * vh};
-      case 2: // abajo
-        return {x: Math.random() * vw, y: vh};
-      case 3: // izquierda
-        return {x: 0, y: Math.random() * vh};
-    }
+  function anim(t){
+    if(!start) start=t;
+    const pr=Math.min((t-start)/dur,1);
+    const nx=x0+dx*dist*pr, ny=y0+dy*dist*pr;
+    const scale=0.1+(scaleMax-0.1)*pr;
+    const opacity=pr<0.6 ? pr/0.6 : 1-(pr-0.6)/0.4;
+    w.style.left=`${nx}px`; w.style.top=`${ny}px`;
+    w.style.transform=`translate(-50%,-50%) scale(${scale})`;
+    w.style.opacity=opacity;
+    if(pr<1) requestAnimationFrame(anim);
+    else { w.remove(); active--; }
   }
+  requestAnimationFrame(anim);
+}
 
-  function createWord() {
-    if (activeWords >= maxActiveWords) return;
-    activeWords++;
-
-    const word = document.createElement("div");
-    word.className = "word";
-    word.innerText = phrases[Math.floor(Math.random() * phrases.length)];
-    document.body.appendChild(word);
-
-    const duration = 3500 + Math.random() * 2000; // 3.5 - 5.5 seg
-    const scaleMax = 2.5;
-
-    // Origen en el borde
-    const {x: x0, y: y0} = randomBorderPoint();
-
-    // Vector dirección hacia el centro
-    const dx = centerX - x0;
-    const dy = centerY - y0;
-    const len = Math.sqrt(dx*dx + dy*dy);
-    const dirX = dx / len;
-    const dirY = dy / len;
-
-    // Distancia para llegar al centro y pasar un poco más (para desaparecer)
-    const maxDist = len + 200;
-
-    let start = null;
-
-    word.style.left = `${x0}px`;
-    word.style.top = `${y0}px`;
-    word.style.transform = `translate(-50%, -50%) scale(0.1)`;
-    word.style.opacity = 0;
-
-    function animate(timestamp) {
-      if (!start) start = timestamp;
-      const elapsed = timestamp - start;
-      const progress = Math.min(elapsed / duration, 1);
-
-      // Posición moviéndose hacia el centro + 200 px más allá
-      const x = x0 + dirX * maxDist * progress;
-      const y = y0 + dirY * maxDist * progress;
-      const scale = 0.1 + (scaleMax - 0.1) * progress;
-
-      // Opacidad: fade in y fade out suave
-      let opacity;
-      if (progress < 0.6) {
-        opacity = progress / 0.6;
-      } else {
-        opacity = 1 - (progress - 0.6) / 0.4;
-      }
-
-      word.style.left = `${x}px`;
-      word.style.top = `${y}px`;
-      word.style.transform = `translate(-50%, -50%) scale(${scale.toFixed(2)})`;
-      word.style.opacity = opacity;
-
-      if (progress < 1) {
-        requestAnimationFrame(animate);
-      } else {
-        word.remove();
-        activeWords--;
-      }
-    }
-
-    requestAnimationFrame(animate);
-  }
-
-  setInterval(createWord, 30);
-
-  window.addEventListener('resize', () => {
-    vw = window.innerWidth;
-    vh = window.innerHeight;
-    centerX = vw / 2;
-    centerY = vh / 2;
-  });
-</script>
-
-</body>
-</html>
+setInterval(createWord,50);
+window.addEventListener("resize",()=>{vw=window.innerWidth; vh=window.innerHeight; centerX=vw/2; centerY=vh/2;});
+</script></body></html>
 
 
