@@ -1,18 +1,21 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Te Amo 🌙✨</title>
   <style>
+    /* Fondo cielo estrellado */
     body {
       margin: 0;
       overflow: hidden;
-      background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
       height: 100vh;
-      font-family: 'Segoe UI', sans-serif;
+      background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
+      font-family: 'Arial', sans-serif;
       color: white;
+      position: relative;
     }
 
+    /* Estrellas */
     .star {
       position: absolute;
       width: 2px;
@@ -22,18 +25,23 @@
       animation: twinkle 2s infinite;
       opacity: 0.8;
     }
-
     @keyframes twinkle {
       0%, 100% { opacity: 0.8; }
       50% { opacity: 0.2; }
     }
 
+    /* Palabras cayendo */
     .word {
       position: absolute;
       font-size: 1.5em;
       color: #fff;
       opacity: 0.9;
       animation: fall linear;
+      pointer-events: none;
+      user-select: none;
+      white-space: nowrap;
+      font-weight: bold;
+      text-shadow: 0 0 5px #ff4b6e;
     }
 
     @keyframes fall {
@@ -51,37 +59,49 @@
 <body>
 
 <script>
-  // Palabras románticas
-  const words = ["Te amo", "Mi reina", "Mi niña", "Mi vida", "Eres mi todo", "Amor eterno"];
+  // Frases personalizadas
+  const phrases = [
+    "Te Amo",
+    "My love",
+    "Eres preciosa",
+    "Me encantas",
+    "Amor de mi vida",
+    "Reina hermosa",
+    "mi niña",
+    "mi consentida",
+    "Mi Biankita"
+  ];
 
-  // Función para soltar palabras
+  // Función que crea y suelta frases como estrellas cayendo
   function dropWord() {
     const word = document.createElement("div");
     word.className = "word";
-    word.innerText = words[Math.floor(Math.random() * words.length)];
-    word.style.left = Math.random() * 100 + "vw";
-    word.style.animationDuration = 4 + Math.random() * 4 + "s";
+    word.innerText = phrases[Math.floor(Math.random() * phrases.length)];
+    word.style.left = Math.random() * 90 + "vw";
+    word.style.animationDuration = 5 + Math.random() * 5 + "s";
     document.body.appendChild(word);
 
+    // Eliminar palabra tras la animación para no saturar DOM
     setTimeout(() => {
       word.remove();
-    }, 8000);
+    }, 10000);
   }
 
-  // Soltar palabras cada 600 ms
-  setInterval(dropWord, 600);
+  // Lanza palabras cada 700 ms aprox
+  setInterval(dropWord, 700);
 
   // Crear estrellas de fondo
-  for (let i = 0; i < 100; i++) {
+  for (let i = 0; i < 150; i++) {
     const star = document.createElement("div");
     star.className = "star";
     star.style.top = Math.random() * 100 + "vh";
     star.style.left = Math.random() * 100 + "vw";
     star.style.animationDuration = 1 + Math.random() * 3 + "s";
+    star.style.width = star.style.height = (Math.random() * 2 + 1) + "px";
+    star.style.opacity = Math.random() * 0.8 + 0.2;
     document.body.appendChild(star);
   }
 </script>
 
 </body>
 </html>
-
