@@ -68,11 +68,11 @@
   const vw = window.innerWidth;
   const vh = window.innerHeight;
 
-  const maxActiveWords = 5;
+  const maxActiveWords = 6;
   let activeWords = 0;
 
   function createWord() {
-    if (activeWords >= maxActiveWords) return; // evitar saturar
+    if (activeWords >= maxActiveWords) return;
 
     activeWords++;
     const word = document.createElement("div");
@@ -80,12 +80,12 @@
     word.innerText = phrases[Math.floor(Math.random() * phrases.length)];
     document.body.appendChild(word);
 
-    const duration = 3500 + Math.random() * 1500; // 3.5 - 5 seg
+    const duration = 3000 + Math.random() * 1500; // 3 - 4.5 seg
 
-    const fromCenter = Math.random() < 0.2;
+    const fromCenter = Math.random() < 0.3; // 30% chance centro
 
     let x0, y0, dx, dy;
-    const maxDist = 600;
+    const maxDist = 700;
 
     if (fromCenter) {
       x0 = vw / 2;
@@ -131,7 +131,7 @@
 
       const x = x0 + dx * progress;
       const y = y0 + dy * progress;
-      const scale = 0.1 + 2.4 * progress;
+      const scale = 0.1 + 2.5 * progress;
 
       let opacity;
       if (progress < 0.8) opacity = progress / 0.8;
@@ -152,9 +152,10 @@
     requestAnimationFrame(animate);
   }
 
-  // Lanzar palabra cada 1200ms
+  // Cada 600 ms intenta crear hasta 2 palabras
   setInterval(() => {
     createWord();
+    setTimeout(createWord, 200);
   }, 1200);
 
   // Estrellas de fondo
