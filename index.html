@@ -70,7 +70,7 @@
   const vh = window.innerHeight;
 
   let activeWords = 0;
-  const maxActiveWords = 20;
+  const maxActiveWords = 40;
 
   function createWord() {
     if (activeWords >= maxActiveWords) return;
@@ -155,7 +155,7 @@
     requestAnimationFrame(animate);
   }
 
-  setInterval(createWord, 150);
+  setInterval(createWord, 40);
 
   // Estrellas
   for (let i = 0; i < 150; i++) {
