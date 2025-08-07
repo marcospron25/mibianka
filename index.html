@@ -14,7 +14,7 @@
       font-family: 'Arial', sans-serif;
       color: white;
       position: relative;
-      perspective: 800px;
+      perspective: 1000px; /* perspectiva 3D para translateZ */
     }
 
     .star {
@@ -41,17 +41,17 @@
       white-space: nowrap;
       pointer-events: none;
       user-select: none;
-      transform-style: preserve-3d;
-      animation-timing-function: ease-out;
-      animation-fill-mode: forwards;
       left: 50%;
       top: 50%;
+      transform-style: preserve-3d;
       transform-origin: center center;
       text-shadow:
         0 0 5px rgba(255,255,255,0.8),
         0 0 10px rgba(255,255,255,0.6);
       opacity: 0;
-      transform: translate(-50%, -50%) scale(0.1);
+      /* inicia pequeño y alejado en Z */
+      transform: translate(-50%, -50%) translateZ(-800px) scale(0.1);
+      transition: none;
     }
   </style>
 </head>
@@ -76,11 +76,11 @@
     word.innerText = phrases[Math.floor(Math.random() * phrases.length)];
     document.body.appendChild(word);
 
-    const duration = 3000 + Math.random() * 2000; // 3-5 segundos
+    const duration = 3500 + Math.random() * 1500; // 3.5 - 5 seg
 
-    // Movimiento aleatorio desde centro (pequeño desplazamiento para dispersar un poco)
+    // Movimiento lateral random pequeño para que no salgan exacto centro
     const angle = Math.random() * 2 * Math.PI;
-    const maxOffset = 200;
+    const radius = 100; // radio de dispersión lateral
 
     let start = null;
     function animate(timestamp) {
@@ -88,20 +88,61 @@
       const elapsed = timestamp - start;
       const progress = Math.min(elapsed / duration, 1);
 
-      // Escala crece de 0.1 a 1.5 para simular acercamiento
-      const scale = 0.1 + 1.4 * progress;
+      // Eje Z: de -800px (lejos) a +600px (muy cerca y fuera de pantalla)
+      const z = -800 + 1400 * progress;
 
-      // Opacidad va de 0 a 1 y luego desaparece al final
+      // Escala proporcional a la distancia Z (más cerca = más grande)
+      // scale = entre 0.1 (lejano) a 2.5 (muy cerca)
+      const scale = 0.1 + 2.4 * progress;
+
+      // Opacidad: empieza transparente, se hace visible y luego desaparece al final
       let opacity;
-      if (progress < 0.8) {
-        opacity = progress / 0.8; // 0 a 1
+      if (progress < 0.85) {
+        opacity = progress / 0.85; // 0 a 1
       } else {
-        opacity = 1 - (progress - 0.8) / 0.2; // 1 a 0
+        opacity = 1 - (progress - 0.85) / 0.15; // 1 a 0
       }
 
-      // Pequeña dispersión lateral para que no se superpongan todas justo en el centro
-      const offsetX = Math.cos(angle) * maxOffset * (1 - progress);
-      const offsetY = Math.sin(angle) * maxOffset * (1 - progress);
+      // Desplazamiento lateral pequeño para que aparezcan dispersas (dispersión disminuye con progreso)
+      const offsetX = Math.cos(angle) * radius * (1 - progress);
+      const offsetY = Math.sin(angle) * radius * (1 - progress);
 
-      // Aplicar transform con desplazamiento y escala
-      word.style.transform = `translate(calc(-50% + ${offsetX}px), calc(-50% + ${offsetY}px)) scale($
+      word.style.transform = `
+        translate(calc(-50% + ${offsetX}px), calc(-50% + ${offsetY}px))
+        translateZ(${z}px)
+        scale(${scale})
+      `;
+      word.style.opacity = opacity;
+
+      if (progress < 1) {
+        requestAnimationFrame(animate);
+      } else {
+        word.remove();
+      }
+    }
+
+    requestAnimationFrame(animate);
+  }
+
+  // Lanzar montones de palabras rápido
+  setInterval(() => {
+    for(let i = 0; i < 6; i++) {  // 6 palabras a la vez
+      createWord();
+    }
+  }, 350); // cada 350ms salen 6 palabras
+
+  // Crear estrellas de fondo
+  for (let i = 0; i < 150; i++) {
+    const star = document.createElement("div");
+    star.className = "star";
+    star.style.top = Math.random() * 100 + "vh";
+    star.style.left = Math.random() * 100 + "vw";
+    star.style.width = star.style.height = (Math.random() * 2 + 1) + "px";
+    star.style.opacity = Math.random() * 0.8 + 0.2;
+    star.style.animationDuration = 1 + Math.random() * 3 + "s";
+    document.body.appendChild(star);
+  }
+</script>
+
+</body>
+</html>
