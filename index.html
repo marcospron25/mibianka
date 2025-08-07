@@ -18,7 +18,7 @@
 
     .word {
       position: absolute;
-      font-size: 3.3em; /* 🔹 solo un poquito más grande */
+      font-size: 3em;
       color: #ffffff;
       font-style: italic;
       opacity: 0;
@@ -40,7 +40,7 @@
         opacity: 1;
       }
       100% {
-        transform: translate(-50%, -50%) scale(9); /* 🔹 crece un poco más */
+        transform: translate(-50%, -50%) scale(8.5);
         opacity: 0;
       }
     }
@@ -68,7 +68,7 @@
       box-shadow: 0 0 6px white;
       border-radius: 50%;
       opacity: 0.8;
-      animation: shooting 1.2s linear forwards;
+      animation: shooting 1.5s linear forwards;
     }
 
     @keyframes shooting {
@@ -77,7 +77,7 @@
         opacity: 1;
       }
       100% {
-        transform: translate(-700px, 700px) scale(0);
+        transform: translate(-600px, 600px) scale(0);
         opacity: 0;
       }
     }
@@ -97,8 +97,8 @@
   const centerX = vw / 2;
   const centerY = vh / 2;
 
-  // 🔹 Un poco más de estrellas
-  for (let i = 0; i < 180; i++) {
+  // Estrellas estáticas
+  for (let i = 0; i < 100; i++) {
     const star = document.createElement('div');
     star.className = 'star';
     star.style.top = Math.random() * 100 + 'vh';
@@ -107,6 +107,7 @@
     document.body.appendChild(star);
   }
 
+  // Palabras volando al centro
   function createWord() {
     const word = document.createElement('div');
     word.className = 'word';
@@ -140,6 +141,7 @@
     setTimeout(() => word.remove(), 3000);
   }
 
+  // Estrellas fugaces aleatorias
   function createShootingStar() {
     const star = document.createElement('div');
     star.className = 'shooting-star';
@@ -147,15 +149,15 @@
     star.style.left = (vw + 100) + 'px';
     document.body.appendChild(star);
 
-    setTimeout(() => star.remove(), 1300);
+    setTimeout(() => star.remove(), 1600);
   }
 
-  setInterval(createWord, 90);
+  // Intervalos
+  setInterval(createWord, 100); // Palabras
   setInterval(() => {
-    if (Math.random() < 0.5) createShootingStar();
-  }, 600); // 🔹 solo un poco más frecuentes
+    if (Math.random() < 0.3) createShootingStar(); // Estrellas fugaces aleatorias
+  }, 600);
 </script>
 
 </body>
 </html>
-
