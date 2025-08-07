@@ -65,7 +65,6 @@
     "Mi Biankita"
   ];
 
-  // Obtener tamaño de ventana
   const vw = window.innerWidth;
   const vh = window.innerHeight;
 
@@ -77,57 +76,64 @@
 
     const duration = 3500 + Math.random() * 1500; // 3.5 - 5 seg
 
-    // Elegir borde aleatorio: 0=top,1=right,2=bottom,3=left
-    const edge = Math.floor(Math.random() * 4);
+    // Definir si la palabra sale desde el centro (20% probabilidad) o desde un borde (80%)
+    const fromCenter = Math.random() < 0.2;
 
-    // Punto inicial (x0,y0) según borde
-    let x0, y0;
-    if (edge === 0) { // arriba
-      x0 = Math.random() * vw;
-      y0 = 0;
-    } else if (edge === 1) { // derecha
-      x0 = vw;
-      y0 = Math.random() * vh;
-    } else if (edge === 2) { // abajo
-      x0 = Math.random() * vw;
-      y0 = vh;
-    } else { // izquierda
-      x0 = 0;
-      y0 = Math.random() * vh;
+    let x0, y0, dx, dy;
+    const maxDist = 600;
+
+    if (fromCenter) {
+      // Centro de pantalla
+      x0 = vw / 2;
+      y0 = vh / 2;
+
+      // Ángulo aleatorio para dispersarse desde centro
+      const angle = Math.random() * 2 * Math.PI;
+      dx = Math.cos(angle) * maxDist;
+      dy = Math.sin(angle) * maxDist;
+    } else {
+      // Desde los bordes
+      const edge = Math.floor(Math.random() * 4);
+
+      if (edge === 0) { // arriba
+        x0 = Math.random() * vw;
+        y0 = 0;
+        dx = 0;
+        dy = -maxDist;
+      } else if (edge === 1) { // derecha
+        x0 = vw;
+        y0 = Math.random() * vh;
+        dx = maxDist;
+        dy = 0;
+      } else if (edge === 2) { // abajo
+        x0 = Math.random() * vw;
+        y0 = vh;
+        dx = 0;
+        dy = maxDist;
+      } else { // izquierda
+        x0 = 0;
+        y0 = Math.random() * vh;
+        dx = -maxDist;
+        dy = 0;
+      }
     }
 
-    // Vector de movimiento hacia afuera (para que salga de pantalla)
-    // Se calcula para que se mueva en la misma dirección del borde (hacia fuera)
-    // Ejemplo: si está arriba, sale hacia arriba, etc.
-    let dx = 0, dy = 0;
-    const maxDist = 600; // distancia que recorrerá la palabra
-
-    if (edge === 0) { dx = 0; dy = -maxDist; }
-    else if (edge === 1) { dx = maxDist; dy = 0; }
-    else if (edge === 2) { dx = 0; dy = maxDist; }
-    else if (edge === 3) { dx = -maxDist; dy = 0; }
-
-    let start = null;
-
-    // Colocar la palabra en el punto inicial
     word.style.left = `${x0}px`;
     word.style.top = `${y0}px`;
     word.style.transform = `translate(-50%, -50%) scale(0.1)`;
     word.style.opacity = 0;
 
+    let start = null;
     function animate(timestamp) {
       if (!start) start = timestamp;
       const elapsed = timestamp - start;
       const progress = Math.min(elapsed / duration, 1);
 
-      // Posición actual
       const x = x0 + dx * progress;
       const y = y0 + dy * progress;
 
-      // Escala crece de 0.1 a 2.5 para acercamiento
       const scale = 0.1 + 2.4 * progress;
 
-      // Opacidad sube y luego baja
       let opacity;
       if (progress < 0.8) opacity = progress / 0.8;
       else opacity = 1 - (progress - 0.8) / 0.2;
@@ -143,14 +149,13 @@
         word.remove();
       }
     }
-
     requestAnimationFrame(animate);
   }
 
-  // Intervalo para lanzar palabras rápidas pero pocas al mismo tiempo
+  // Lanzar palabra cada 800ms (menos cantidad, velocidad rápida)
   setInterval(() => {
     createWord();
-  }, 450); // cada 450ms sale una palabra
+  }, 800);
 
   // Estrellas de fondo
   for (let i = 0; i < 150; i++) {
