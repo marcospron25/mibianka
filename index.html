@@ -2,10 +2,9 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <title>Te Amo 🌙✨</title>
+  <title>Palabras viajando en cielo estrellado</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Dancing+Script&display=swap');
-
     body {
       margin: 0;
       overflow: hidden;
@@ -16,7 +15,6 @@
       position: relative;
       perspective: 800px;
     }
-
     .star {
       position: absolute;
       width: 2px;
@@ -26,17 +24,16 @@
       animation: twinkle 2s infinite;
       opacity: 0.8;
     }
-
     @keyframes twinkle {
       0%, 100% { opacity: 0.8; }
       50% { opacity: 0.2; }
     }
-
     .word {
       position: fixed;
       font-size: 3em;
       color: #fff;
-      font-weight: 700;
+      font-weight: 400;       /* peso normal */
+      font-style: italic;     /* cursiva */
       white-space: nowrap;
       pointer-events: none;
       user-select: none;
@@ -51,7 +48,6 @@
   </style>
 </head>
 <body>
-
 <script>
   const phrases = [
     "Te Amo",
@@ -64,7 +60,6 @@
     "mi consentida",
     "Mi Biankita"
   ];
-
   const vw = window.innerWidth;
   const vh = window.innerHeight;
 
@@ -73,16 +68,15 @@
 
   function createWord() {
     if (activeWords >= maxActiveWords) return;
-
     activeWords++;
+
     const word = document.createElement("div");
     word.className = "word";
     word.innerText = phrases[Math.floor(Math.random() * phrases.length)];
     document.body.appendChild(word);
 
-    const duration = 3000 + Math.random() * 1500; // 3 - 4.5 seg
-
-    const fromCenter = Math.random() < 0.3; // 30% chance centro
+    const duration = 3500 + Math.random() * 1500; // 3.5 - 5s
+    const fromCenter = Math.random() < 0.3; // 30% chance
 
     let x0, y0, dx, dy;
     const maxDist = 700;
@@ -152,10 +146,9 @@
     requestAnimationFrame(animate);
   }
 
-  // Cada 600 ms intenta crear hasta 2 palabras
   setInterval(() => {
     createWord();
-    setTimeout(createWord, 200);
+    setTimeout(createWord, 600);
   }, 1200);
 
   // Estrellas de fondo
@@ -172,8 +165,6 @@
     document.body.appendChild(star);
   }
 </script>
-
 </body>
 </html>
-
 
