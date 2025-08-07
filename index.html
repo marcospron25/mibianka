@@ -33,7 +33,7 @@
       font-size: 3em;
       color: #fff;
       font-weight: 300;       /* peso más fino */
-      font-style: normal;
+      font-style: italic;     /* cursiva */
       white-space: nowrap;
       pointer-events: none;
       user-select: none;
@@ -44,7 +44,6 @@
       opacity: 0;
       transform: scale(0.1);
       will-change: transform, opacity, left, top;
-      font-style: italic; /* para cursiva */
     }
   </style>
 </head>
@@ -64,7 +63,7 @@
   const vw = window.innerWidth;
   const vh = window.innerHeight;
 
-  const maxActiveWords = 3;  // menos palabras simultaneas
+  const maxActiveWords = 7;  // aumentamos cantidad simultánea
   let activeWords = 0;
 
   function createWord() {
@@ -149,8 +148,8 @@
 
   setInterval(() => {
     createWord();
-    setTimeout(createWord, 800);  // menos palabras y más espaciadas
-  }, 1500);
+    setTimeout(createWord, 600);
+  }, 1000);
 
   for (let i = 0; i < 150; i++) {
     const star = document.createElement("div");
