@@ -81,42 +81,45 @@
     word.innerText = phrases[Math.floor(Math.random() * phrases.length)];
     document.body.appendChild(word);
 
-    const duration = 3000 + Math.random() * 2000; // 3-5 seg
-    const maxDist = 800;
+    // Duración total animación
+    const duration = 5000 + Math.random() * 2000; // 5-7 seg
+    const scaleMax = 2.5;
 
-    // 5 posibles lugares de salida: 0=top,1=right,2=bottom,3=left,4=center
+    // 5 lugares posibles: 0=top,1=right,2=bottom,3=left,4=center
     const edge = Math.floor(Math.random() * 5);
 
     let x0, y0, dx, dy;
 
+    // Distancia para salir más allá del borde (un poco más que vw/vh)
+    const maxDistX = vw + 200;
+    const maxDistY = vh + 200;
+
     if (edge === 0) { // arriba
       x0 = Math.random() * vw;
       y0 = 0;
-      dx = (Math.random() - 0.5) * 200;
-      dy = -maxDist;
+      dx = (Math.random() - 0.5) * 400;
+      dy = -maxDistY;
     } else if (edge === 1) { // derecha
       x0 = vw;
       y0 = Math.random() * vh;
-      dx = maxDist;
-      dy = (Math.random() - 0.5) * 200;
+      dx = maxDistX;
+      dy = (Math.random() - 0.5) * 400;
     } else if (edge === 2) { // abajo
       x0 = Math.random() * vw;
       y0 = vh;
-      dx = (Math.random() - 0.5) * 200;
-      dy = maxDist;
+      dx = (Math.random() - 0.5) * 400;
+      dy = maxDistY;
     } else if (edge === 3) { // izquierda
       x0 = 0;
       y0 = Math.random() * vh;
-      dx = -maxDist;
-      dy = (Math.random() - 0.5) * 200;
-    } else { // centro con dispersión ±50px
-      const dispersion = 50;
-      x0 = vw / 2 + (Math.random() - 0.5) * dispersion * 2;
-      y0 = vh / 2 + (Math.random() - 0.5) * dispersion * 2;
-
+      dx = -maxDistX;
+      dy = (Math.random() - 0.5) * 400;
+    } else { // centro
+      x0 = vw / 2;
+      y0 = vh / 2;
       const angle = Math.random() * 2 * Math.PI;
-      dx = Math.cos(angle) * maxDist;
-      dy = Math.sin(angle) * maxDist;
+      dx = Math.cos(angle) * Math.max(maxDistX, maxDistY);
+      dy = Math.sin(angle) * Math.max(maxDistX, maxDistY);
     }
 
     let start = null;
@@ -131,17 +134,24 @@
       const elapsed = timestamp - start;
       const progress = Math.min(elapsed / duration, 1);
 
+      // Posición actual (lineal del punto inicial hacia fuera pasando el borde)
       const x = x0 + dx * progress;
       const y = y0 + dy * progress;
-      const scale = 0.1 + 2.4 * progress;
 
+      // Escala de pequeño a grande (0.1 a scaleMax)
+      const scale = 0.1 + (scaleMax - 0.1) * progress;
+
+      // Opacidad: sube rápido y luego baja al final
       let opacity;
-      if (progress < 0.8) opacity = progress / 0.8;
-      else opacity = 1 - (progress - 0.8) / 0.2;
+      if (progress < 0.7) {
+        opacity = progress / 0.7; // sube a 1
+      } else {
+        opacity = 1 - (progress - 0.7) / 0.3; // baja a 0
+      }
 
       word.style.left = `${x}px`;
       word.style.top = `${y}px`;
-      word.style.transform = `translate(-50%, -50%) scale(${scale})`;
+      word.style.transform = `translate(-50%, -50%) scale(${scale.toFixed(2)})`;
       word.style.opacity = opacity;
 
       if (progress < 1) {
@@ -155,7 +165,6 @@
     requestAnimationFrame(animate);
   }
 
-  // Intervalo para crear palabras mientras no sobrepase el límite máximo
   setInterval(createWord, 60);
 
   // Estrellas de fondo
