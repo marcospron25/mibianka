@@ -87,35 +87,6 @@
         opacity: 0;
       }
     }
-
-    /* Corazón fugaz */
-    .shooting-heart {
-      position: fixed;
-      width: 24px;
-      height: 24px;
-      background: red;
-      clip-path: polygon(
-        50% 15%, 61% 18%, 68% 25%, 75% 40%, 75% 60%, 
-        68% 75%, 50% 90%, 32% 75%, 25% 60%, 25% 40%, 
-        32% 25%, 39% 18%
-      );
-      filter: drop-shadow(0 0 5px red);
-      opacity: 0.9;
-      animation: heartShooting 1.5s linear forwards;
-      pointer-events: none;
-      z-index: 10;
-    }
-
-    @keyframes heartShooting {
-      0% {
-        transform: translate(0, 0) rotate(-45deg);
-        opacity: 1;
-      }
-      100% {
-        transform: translate(100vw, 100vh) rotate(-45deg);
-        opacity: 0;
-      }
-    }
   </style>
 </head>
 <body>
@@ -162,7 +133,6 @@
     const star = document.createElement('div');
     star.className = 'shooting-star';
 
-    // Para que empiecen desde el borde superior derecho
     star.style.top = (Math.random() * 20 + 5) + 'vh';
     star.style.left = '100vw';
 
@@ -170,31 +140,13 @@
     star.addEventListener('animationend', () => star.remove());
   }
 
-  // Crear corazón fugaz
-  function launchShootingHeart() {
-    const heart = document.createElement('div');
-    heart.className = 'shooting-heart';
-
-    // Para que empiecen desde borde superior izquierdo
-    heart.style.top = (Math.random() * 20 + 5) + 'vh';
-    heart.style.left = '-30px'; // afuera a la izquierda
-
-    document.body.appendChild(heart);
-    heart.addEventListener('animationend', () => heart.remove());
-  }
-
   // Intervalos para lanzar elementos
   setInterval(launchWord, 100); // palabras
   setInterval(() => {
     if (Math.random() < 0.3) launchShootingStar();
   }, 1000);
-  setInterval(() => {
-    if (Math.random() < 0.15) launchShootingHeart();
-  }, 1500);
 
 </script>
 
 </body>
 </html>
-
-
