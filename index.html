@@ -4,6 +4,8 @@
   <meta charset="UTF-8" />
   <title>Te Amo 🌙✨</title>
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Dancing+Script&display=swap');
+
     body {
       margin: 0;
       overflow: hidden;
@@ -32,10 +34,10 @@
 
     .word {
       position: absolute;
-      font-size: 1.5em;
+      font-size: 3em; /* más grande */
       color: #fff;
-      font-weight: bold;
-      text-shadow: 0 0 5px #ff4b6e;
+      font-family: 'Dancing Script', cursive; /* fuente cursiva y bonita */
+      font-weight: 700;
       white-space: nowrap;
       pointer-events: none;
       user-select: none;
@@ -45,6 +47,9 @@
       left: 50%;
       top: 50%;
       transform-origin: center center;
+      text-shadow:
+        0 0 5px rgba(255,255,255,0.8),
+        0 0 10px rgba(255,255,255,0.6);
     }
   </style>
 </head>
@@ -68,16 +73,13 @@
     word.className = "word";
     word.innerText = phrases[Math.floor(Math.random() * phrases.length)];
 
-    // Posición inicial en el centro de la pantalla (usando CSS left/top 50%)
-    // Ajustamos transform al principio para centrar el texto
     word.style.transform = "translate(-50%, -50%) scale(1)";
     document.body.appendChild(word);
 
-    const duration = 4000 + Math.random() * 3000; // 4-7 segundos
+    const duration = 2000 + Math.random() * 1500; // más rápido: 2 - 3.5 segundos
 
-    // Elegimos un ángulo aleatorio para disparar hacia afuera
-    const angle = Math.random() * 2 * Math.PI; // 0 a 2π
-    const maxDistance = Math.min(window.innerWidth, window.innerHeight) / 2 + 100;
+    const angle = Math.random() * 2 * Math.PI;
+    const maxDistance = Math.min(window.innerWidth, window.innerHeight) / 2 + 150;
 
     let start = null;
     function animate(timestamp) {
@@ -85,15 +87,12 @@
       const elapsed = timestamp - start;
       const progress = Math.min(elapsed / duration, 1);
 
-      // Calculamos el movimiento en X e Y desde el centro hacia afuera
       const translateX = Math.cos(angle) * maxDistance * progress;
       const translateY = Math.sin(angle) * maxDistance * progress;
 
-      // Reducir tamaño y opacidad simulando profundidad
       const scale = 1 - 0.8 * progress;
       const opacity = 1 - progress;
 
-      // Aplicamos transform: traducir + centrar -50% -50% + escalar
       word.style.transform = `translate(calc(-50% + ${translateX}px), calc(-50% + ${translateY}px)) scale(${scale})`;
       word.style.opacity = opacity;
 
@@ -107,10 +106,8 @@
     requestAnimationFrame(animate);
   }
 
-  // Crear palabras cada 700 ms
-  setInterval(createWord, 700);
+  setInterval(createWord, 500); // palabras salen un poco más rápido
 
-  // Crear estrellas de fondo
   for (let i = 0; i < 150; i++) {
     const star = document.createElement("div");
     star.className = "star";
