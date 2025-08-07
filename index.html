@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Te Amo 💖</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Dancing+Script&display=swap');
@@ -62,6 +62,56 @@
       0%, 100% { opacity: 0.5; }
       50% { opacity: 0.1; }
     }
+
+    /* Estrella fugaz */
+    .shooting-star {
+      position: absolute;
+      width: 3px;
+      height: 80px;
+      background: linear-gradient(45deg, white, rgba(255,255,255,0));
+      opacity: 0.8;
+      border-radius: 50%;
+      filter: drop-shadow(0 0 6px white);
+      animation: shooting 1.2s linear forwards;
+    }
+
+    @keyframes shooting {
+      0% {
+        transform: translateX(0) translateY(0) rotate(45deg);
+        opacity: 1;
+      }
+      100% {
+        transform: translateX(-100vw) translateY(100vh) rotate(45deg);
+        opacity: 0;
+      }
+    }
+
+    /* Corazón fugaz */
+    .shooting-heart {
+      position: absolute;
+      width: 24px;
+      height: 24px;
+      background: red;
+      clip-path: polygon(
+        50% 15%, 61% 18%, 68% 25%, 75% 40%, 75% 60%, 
+        68% 75%, 50% 90%, 32% 75%, 25% 60%, 25% 40%, 
+        32% 25%, 39% 18%
+      );
+      filter: drop-shadow(0 0 5px red);
+      opacity: 0.9;
+      animation: heartShooting 1.5s linear forwards;
+    }
+
+    @keyframes heartShooting {
+      0% {
+        transform: translateX(0) translateY(0) rotate(-45deg);
+        opacity: 1;
+      }
+      100% {
+        transform: translateX(100vw) translateY(100vh) rotate(-45deg);
+        opacity: 0;
+      }
+    }
   </style>
 </head>
 <body>
@@ -79,7 +129,7 @@
     "Mi Biankita"
   ];
 
-  // Crear estrellas de fondo
+  // Crear estrellas de fondo normales
   for (let i = 0; i < 100; i++) {
     const star = document.createElement('div');
     star.className = 'star';
@@ -95,18 +145,45 @@
     word.className = 'word';
     word.innerText = phrases[Math.floor(Math.random() * phrases.length)];
 
-    // Posición aleatoria en pantalla (pero visualmente recta hacia adelante)
     word.style.top = (Math.random() * 100) + 'vh';
     word.style.left = (Math.random() * 100) + 'vw';
 
     document.body.appendChild(word);
 
-    // Remover después de la animación
     setTimeout(() => word.remove(), 2500);
   }
 
-  // Lanzar palabras continuamente
-  setInterval(launchWord, 100); // Controla cuántas salen
+  // Crear estrella fugaz
+  function launchShootingStar() {
+    const star = document.createElement('div');
+    star.className = 'shooting-star';
+    star.style.top = Math.random() * 30 + 'vh';
+    star.style.left = Math.random() * 100 + 'vw';
+
+    document.body.appendChild(star);
+    star.addEventListener('animationend', () => star.remove());
+  }
+
+  // Crear corazón fugaz
+  function launchShootingHeart() {
+    const heart = document.createElement('div');
+    heart.className = 'shooting-heart';
+    heart.style.top = Math.random() * 30 + 'vh';
+    heart.style.left = Math.random() * 100 + 'vw';
+
+    document.body.appendChild(heart);
+    heart.addEventListener('animationend', () => heart.remove());
+  }
+
+  // Intervalos para lanzar elementos
+  setInterval(launchWord, 100); // palabras
+  setInterval(() => {
+    if (Math.random() < 0.3) launchShootingStar();
+  }, 1000);
+  setInterval(() => {
+    if (Math.random() < 0.15) launchShootingHeart();
+  }, 1500);
+
 </script>
 
 </body>
