@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <title>Te Amo 🌙✨</title>
   <style>
-    /* Fondo cielo estrellado */
     body {
       margin: 0;
       overflow: hidden;
@@ -13,9 +12,9 @@
       font-family: 'Arial', sans-serif;
       color: white;
       position: relative;
+      perspective: 800px; /* perspectiva 3D */
     }
 
-    /* Estrellas */
     .star {
       position: absolute;
       width: 2px;
@@ -25,41 +24,33 @@
       animation: twinkle 2s infinite;
       opacity: 0.8;
     }
+
     @keyframes twinkle {
       0%, 100% { opacity: 0.8; }
       50% { opacity: 0.2; }
     }
 
-    /* Palabras cayendo */
     .word {
       position: absolute;
       font-size: 1.5em;
       color: #fff;
-      opacity: 0.9;
-      animation: fall linear;
-      pointer-events: none;
-      user-select: none;
-      white-space: nowrap;
       font-weight: bold;
       text-shadow: 0 0 5px #ff4b6e;
+      white-space: nowrap;
+      pointer-events: none;
+      user-select: none;
+      transform-style: preserve-3d;
+      animation-timing-function: ease-out;
+      /* inicia en frente y se aleja */
+      animation-fill-mode: forwards;
     }
 
-    @keyframes fall {
-      0% {
-        transform: translateY(-10%);
-        opacity: 1;
-      }
-      100% {
-        transform: translateY(110vh);
-        opacity: 0;
-      }
-    }
+    /* Animación personalizada por JS (se asigna dinámicamente) */
   </style>
 </head>
 <body>
 
 <script>
-  // Frases personalizadas
   const phrases = [
     "Te Amo",
     "My love",
@@ -72,23 +63,60 @@
     "Mi Biankita"
   ];
 
-  // Función que crea y suelta frases como estrellas cayendo
-  function dropWord() {
+  function createWord() {
     const word = document.createElement("div");
     word.className = "word";
     word.innerText = phrases[Math.floor(Math.random() * phrases.length)];
-    word.style.left = Math.random() * 90 + "vw";
-    word.style.animationDuration = 5 + Math.random() * 5 + "s";
+
+    // Posición inicial aleatoria dentro de la pantalla
+    const startX = Math.random() * window.innerWidth;
+    const startY = Math.random() * window.innerHeight;
+
+    word.style.left = startX + "px";
+    word.style.top = startY + "px";
+
+    // Añadir a body
     document.body.appendChild(word);
 
-    // Eliminar palabra tras la animación para no saturar DOM
-    setTimeout(() => {
-      word.remove();
-    }, 10000);
+    // Usar animación con JS para mover hacia "profundo"
+    // Animamos transform: translate3d y scale para simular profundidad
+    // La palabra se mueve hacia abajo y se reduce, desapareciendo
+
+    const duration = 4000 + Math.random() * 3000; // 4-7 segundos
+
+    let start = null;
+    function animate(timestamp) {
+      if (!start) start = timestamp;
+      const elapsed = timestamp - start;
+      const progress = Math.min(elapsed / duration, 1);
+
+      // Movimiento hacia abajo (Y) y hacia el centro en X, y escala disminuyendo
+      // Podemos hacer que X se acerque al centro (window.innerWidth/2)
+      // Y aumente para que parezca que se aleja
+      // Scale disminuye de 1 a 0.2
+
+      const targetX = window.innerWidth / 2;
+      const deltaX = (targetX - startX) * progress;
+      const translateX = deltaX;
+      const translateY = 200 * progress; // baja 200px aprox
+      const scale = 1 - 0.8 * progress; // de 1 a 0.2
+      const opacity = 1 - progress;
+
+      word.style.transform = `translate3d(${translateX}px, ${translateY}px, 0) scale(${scale})`;
+      word.style.opacity = opacity;
+
+      if (progress < 1) {
+        requestAnimationFrame(animate);
+      } else {
+        word.remove();
+      }
+    }
+
+    requestAnimationFrame(animate);
   }
 
-  // Lanza palabras cada 700 ms aprox
-  setInterval(dropWord, 700);
+  // Crear una palabra cada 700 ms aprox
+  setInterval(createWord, 700);
 
   // Crear estrellas de fondo
   for (let i = 0; i < 150; i++) {
@@ -96,9 +124,9 @@
     star.className = "star";
     star.style.top = Math.random() * 100 + "vh";
     star.style.left = Math.random() * 100 + "vw";
-    star.style.animationDuration = 1 + Math.random() * 3 + "s";
     star.style.width = star.style.height = (Math.random() * 2 + 1) + "px";
     star.style.opacity = Math.random() * 0.8 + 0.2;
+    star.style.animationDuration = 1 + Math.random() * 3 + "s";
     document.body.appendChild(star);
   }
 </script>
