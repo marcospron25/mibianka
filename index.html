@@ -18,7 +18,7 @@
 
     .word {
       position: absolute;
-      font-size: 3em;
+      font-size: 3.3em; /* 🔹 solo un poquito más grande */
       color: #ffffff;
       font-style: italic;
       opacity: 0;
@@ -40,7 +40,7 @@
         opacity: 1;
       }
       100% {
-        transform: translate(-50%, -50%) scale(10);
+        transform: translate(-50%, -50%) scale(9); /* 🔹 crece un poco más */
         opacity: 0;
       }
     }
@@ -97,8 +97,8 @@
   const centerX = vw / 2;
   const centerY = vh / 2;
 
-  // Más estrellas estáticas
-  for (let i = 0; i < 200; i++) {
+  // 🔹 Un poco más de estrellas
+  for (let i = 0; i < 180; i++) {
     const star = document.createElement('div');
     star.className = 'star';
     star.style.top = Math.random() * 100 + 'vh';
@@ -107,7 +107,6 @@
     document.body.appendChild(star);
   }
 
-  // Palabras volando hacia el centro
   function createWord() {
     const word = document.createElement('div');
     word.className = 'word';
@@ -141,7 +140,6 @@
     setTimeout(() => word.remove(), 3000);
   }
 
-  // Estrellas fugaces
   function createShootingStar() {
     const star = document.createElement('div');
     star.className = 'shooting-star';
@@ -152,12 +150,12 @@
     setTimeout(() => star.remove(), 1300);
   }
 
-  // Intervalos
-  setInterval(createWord, 90); // Palabras frecuentes
+  setInterval(createWord, 90);
   setInterval(() => {
-    if (Math.random() < 0.5) createShootingStar(); // Más fugaces
-  }, 500);
+    if (Math.random() < 0.5) createShootingStar();
+  }, 600); // 🔹 solo un poco más frecuentes
 </script>
 
 </body>
 </html>
+
