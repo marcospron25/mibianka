@@ -33,7 +33,7 @@
     }
 
     .word {
-      position: fixed; /* fixed para que se posicione respecto a la ventana */
+      position: fixed;
       font-size: 3em;
       color: #fff;
       font-weight: 700;
@@ -68,7 +68,13 @@
   const vw = window.innerWidth;
   const vh = window.innerHeight;
 
+  const maxActiveWords = 5;
+  let activeWords = 0;
+
   function createWord() {
+    if (activeWords >= maxActiveWords) return; // evitar saturar
+
+    activeWords++;
     const word = document.createElement("div");
     word.className = "word";
     word.innerText = phrases[Math.floor(Math.random() * phrases.length)];
@@ -76,7 +82,6 @@
 
     const duration = 3500 + Math.random() * 1500; // 3.5 - 5 seg
 
-    // 20% chance from center, 80% from edges
     const fromCenter = Math.random() < 0.2;
 
     let x0, y0, dx, dy;
@@ -141,14 +146,16 @@
         requestAnimationFrame(animate);
       } else {
         word.remove();
+        activeWords--;
       }
     }
     requestAnimationFrame(animate);
   }
 
+  // Lanzar palabra cada 1200ms
   setInterval(() => {
     createWord();
-  }, 800);
+  }, 1200);
 
   // Estrellas de fondo
   for (let i = 0; i < 150; i++) {
