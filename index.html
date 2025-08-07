@@ -24,13 +24,13 @@
       opacity: 0;
       white-space: nowrap;
       text-shadow: 0 0 10px #ffffffaa;
-      transform: translate(-50%, -50%) scale(0.2);
+      transform: translate(-50%, -50%) scale(0.5);
       animation: flyToCenter 2.5s ease-out forwards;
     }
 
     @keyframes flyToCenter {
       0% {
-        transform: translate(var(--xStart), var(--yStart)) scale(0.2);
+        transform: translate(var(--xStart), var(--yStart)) scale(0.5);
         opacity: 0;
       }
       40% {
@@ -40,7 +40,7 @@
         opacity: 1;
       }
       100% {
-        transform: translate(-50%, -50%) scale(8);
+        transform: translate(-50%, -50%) scale(6);
         opacity: 0;
       }
     }
@@ -59,28 +59,6 @@
       0%, 100% { opacity: 0.5; }
       50% { opacity: 0.1; }
     }
-
-    .shooting-star {
-      position: absolute;
-      width: 2px;
-      height: 2px;
-      background: white;
-      box-shadow: 0 0 6px white;
-      border-radius: 50%;
-      opacity: 0.8;
-      animation: shooting 1.5s linear forwards;
-    }
-
-    @keyframes shooting {
-      0% {
-        transform: translate(0, 0) scale(1);
-        opacity: 1;
-      }
-      100% {
-        transform: translate(-600px, 600px) scale(0);
-        opacity: 0;
-      }
-    }
   </style>
 </head>
 <body>
@@ -97,7 +75,7 @@
   const centerX = vw / 2;
   const centerY = vh / 2;
 
-  // Estrellas estáticas
+  // Crear estrellas de fondo
   for (let i = 0; i < 100; i++) {
     const star = document.createElement('div');
     star.className = 'star';
@@ -107,24 +85,24 @@
     document.body.appendChild(star);
   }
 
-  // Palabras volando al centro
+  // Crear palabra desde borde hacia el centro
   function createWord() {
     const word = document.createElement('div');
     word.className = 'word';
     word.innerText = phrases[Math.floor(Math.random() * phrases.length)];
 
-    const edge = Math.floor(Math.random() * 8); // 8 direcciones
+    const edge = Math.floor(Math.random() * 8); // 8 direcciones: N, NE, E, SE, S, SW, W, NW
     let xStart = 0, yStart = 0;
 
     switch (edge) {
-      case 0: xStart = Math.random() * vw; yStart = -100; break;
-      case 1: xStart = vw + 100; yStart = -100; break;
-      case 2: xStart = vw + 100; yStart = Math.random() * vh; break;
-      case 3: xStart = vw + 100; yStart = vh + 100; break;
-      case 4: xStart = Math.random() * vw; yStart = vh + 100; break;
-      case 5: xStart = -100; yStart = vh + 100; break;
-      case 6: xStart = -100; yStart = Math.random() * vh; break;
-      case 7: xStart = -100; yStart = -100; break;
+      case 0: xStart = Math.random() * vw; yStart = -100; break; // Top
+      case 1: xStart = vw + 100; yStart = -100; break; // Top-Right
+      case 2: xStart = vw + 100; yStart = Math.random() * vh; break; // Right
+      case 3: xStart = vw + 100; yStart = vh + 100; break; // Bottom-Right
+      case 4: xStart = Math.random() * vw; yStart = vh + 100; break; // Bottom
+      case 5: xStart = -100; yStart = vh + 100; break; // Bottom-Left
+      case 6: xStart = -100; yStart = Math.random() * vh; break; // Left
+      case 7: xStart = -100; yStart = -100; break; // Top-Left
     }
 
     const xOffset = `${xStart - centerX}px`;
@@ -138,27 +116,13 @@
 
     document.body.appendChild(word);
 
-    setTimeout(() => word.remove(), 3000);
+    // Eliminar después de animar
+    setTimeout(() => word.remove(), 2600);
   }
 
-  // Estrellas fugaces aleatorias
-  function createShootingStar() {
-    const star = document.createElement('div');
-    star.className = 'shooting-star';
-    star.style.top = Math.random() * vh + 'px';
-    star.style.left = (vw + 100) + 'px';
-    document.body.appendChild(star);
-
-    setTimeout(() => star.remove(), 1600);
-  }
-
-  // Intervalos
-  setInterval(createWord, 100); // Palabras
-  setInterval(() => {
-    if (Math.random() < 0.3) createShootingStar(); // Estrellas fugaces aleatorias
-  }, 600);
+  // Lanzar palabras continuamente
+  setInterval(createWord, 100);
 </script>
 
 </body>
 </html>
-
