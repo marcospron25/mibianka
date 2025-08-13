@@ -16,9 +16,10 @@
       position: relative;
     }
 
+    /* Frases */
     .word {
       position: absolute;
-      font-size: 2.4em;
+      font-size: 2.5em;
       color: #fff;
       text-shadow: 0 0 10px #fff;
       opacity: 0;
@@ -27,15 +28,16 @@
       pointer-events: none;
     }
 
+    /* Fotos */
     .photo {
       position: absolute;
-      width: 170px;
-      height: 170px;
+      width: 180px;
+      height: 180px;
       object-fit: cover;
       border-radius: 10px;
       opacity: 0;
       transform: scale(0.4) translateY(100vh);
-      animation: rise 5.5s linear forwards;
+      animation: rise 6s linear forwards;
       pointer-events: none;
     }
 
@@ -67,51 +69,67 @@
   </style>
 </head>
 <body>
+  <!-- Botón invisible para activar música -->
   <button id="playBtn" aria-label="Play"></button>
+
+  <!-- Música -->
   <audio id="bgMusic" loop>
     <source src="Morat.mp3" type="audio/mpeg">
   </audio>
 
   <script>
+    // Frases románticas
     const phrases = [
-      "Te Amo","My love","Eres preciosa","Me encantas","Amor de mi vida",
-      "Reina hermosa","Mi niña","Mi consentida","No te quiero perder",
-      "te quiero cerca","Mi mente, cuerpo, alma te reclaman","Mi Biankita"
+      "Te Amo", "My love", "Eres preciosa", "Me encantas", "Amor de mi vida",
+      "Reina hermosa", "Mi niña", "Mi consentida", "No te quiero perder",
+      "te quiero cerca", "Mi mente, cuerpo, alma te reclaman", "Mi Biankita"
     ];
 
+    // Fotos (las 6 que subiste)
     const fotos = [
-      "Multimedia%20(10).jpg","Multimedia%20(11).jpg","Multimedia%20(12).jpg",
-      "Multimedia%20(13).jpg","Multimedia%20(14).jpg","Multimedia%20(15).jpg"
+      "Multimedia%20(10).jpg",
+      "Multimedia%20(11).jpg",
+      "Multimedia%20(12).jpg",
+      "Multimedia%20(13).jpg",
+      "Multimedia%20(14).jpg",
+      "Multimedia%20(15).jpg"
     ];
 
-    const music   = document.getElementById('bgMusic');
+    // Música al clic
     const playBtn = document.getElementById('playBtn');
-    playBtn.addEventListener('click', () => { music.play(); playBtn.style.display='none'; });
+    const music = document.getElementById('bgMusic');
+    playBtn.addEventListener('click', () => {
+      music.play();
+      playBtn.style.display = 'none';
+    });
 
-    // LANZAMIENTO SIMULTÁNEO
-    function lanzar() {
-      // 1 foto
+    // Lanzar fotos (1 cada 3 s)
+    function lanzarFotos() {
       const img = document.createElement('img');
       img.className = 'photo';
-      img.src = fotos[Math.floor(Math.random()*fotos.length)];
-      img.style.left = Math.random()*100+'vw';
+      img.src = fotos[Math.floor(Math.random() * fotos.length)];
+      img.style.left = Math.random() * 100 + 'vw';
       document.body.appendChild(img);
-      setTimeout(()=>img.remove(), 5500);
+      setTimeout(() => img.remove(), 6000);
+    }
 
-      // 2 palabras
-      for(let i=0;i<2;i++){
+    // Lanzar frases (2 cada 2.5 s)
+    function lanzarFrases() {
+      for (let i = 0; i < 2; i++) {
         const word = document.createElement('div');
         word.className = 'word';
-        word.innerText = phrases[Math.floor(Math.random()*phrases.length)];
-        word.style.top  = Math.random()*100+'vh';
-        word.style.left = Math.random()*100+'vw';
-        word.style.animationDelay = i*0.3+'s'; // pequeño desfase
+        word.innerText = phrases[Math.floor(Math.random() * phrases.length)];
+        word.style.top  = Math.random() * 100 + 'vh';
+        word.style.left = Math.random() * 100 + 'vw';
+        word.style.animationDelay = i * 0.3 + 's';
         document.body.appendChild(word);
-        setTimeout(()=>word.remove(), 3000);
+        setTimeout(() => word.remove(), 3000);
       }
     }
 
-    setInterval(lanzar, 2000); // cada 2 segundos
+    // Intervalos simultáneos
+    setInterval(lanzarFrases, 2500); // 2 frases
+    setInterval(lanzarFotos, 3000);  // 1 foto
   </script>
 </body>
 </html>
