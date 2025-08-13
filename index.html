@@ -16,51 +16,74 @@
       position: relative;
     }
 
-    /* Frases */
-    .word {
+    /* Frases y fotos con el mismo efecto */
+    .item {
       position: absolute;
-      font-size: 2.5em;
-      color: #fff;
+      top: 50%;
+      left: 50%;
+      opacity: 0;
+      transform: translate(-50%, -50%) translateZ(-1000px) scale(0.3) rotate(var(--rot));
+      animation: flyToFront 3.5s ease-out forwards;
+      pointer-events: none;
+    }
+
+    .item.text {
+      font-size: 2.4em;
       text-shadow: 0 0 10px #fff;
-      opacity: 0;
-      transform: translate(-50%, -50%) translateZ(-1000px);
-      animation: flyToFront 3s ease-out forwards;
-      pointer-events: none;
     }
 
-    /* Fotos */
-    .photo {
-      position: absolute;
-      width: 180px;
-      height: 180px;
+    .item.photo {
+      width: 170px;
+      height: 170px;
       object-fit: cover;
-      border-radius: 10px;
-      opacity: 0;
-      transform: scale(0.4) translateY(100vh);
-      animation: rise 6s linear forwards;
-      pointer-events: none;
-    }
-
-    @keyframes rise {
-      0% { opacity: 0; transform: scale(0.4) translateY(100vh) rotate(-15deg); }
-      10% { opacity: 1; }
-      90% { opacity: 1; }
-      100% { opacity: 0; transform: scale(1) translateY(-100vh) rotate(15deg); }
+      border-radius: 12px;
     }
 
     @keyframes flyToFront {
-      0% { opacity: 0; transform: translate(-50%, -50%) translateZ(-1000px); }
-      30% { opacity: 1; }
-      90% { opacity: 1; }
-      100% { opacity: 0; transform: translate(-50%, -50%) translateZ(300px); }
+      0%   { opacity: 0; transform: translate(-50%, -50%) translateZ(-1000px) scale(0.3) rotate(var(--rot)); }
+      25%  { opacity: 1; }
+      75%  { opacity: 1; }
+      100% { opacity: 0; transform: translate(-50%, -50%) translateZ(400px) scale(1) rotate(var(--rot)); }
+    }
+
+    /* Estrellas fijas */
+    .star {
+      position: absolute;
+      width: 2px;
+      height: 2px;
+      background: white;
+      border-radius: 50%;
+      opacity: 0.5;
+      animation: twinkle 2s infinite;
+    }
+
+    @keyframes twinkle {
+      0%, 100% { opacity: 0.5; }
+      50% { opacity: 0.1; }
+    }
+
+    /* Estrella fugaz */
+    .shooting-star {
+      position: fixed;
+      width: 3px;
+      height: 80px;
+      background: linear-gradient(45deg, white, rgba(255,255,255,0));
+      opacity: 0.8;
+      border-radius: 50%;
+      filter: drop-shadow(0 0 6px white);
+      animation: shooting 1.2s linear forwards;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    @keyframes shooting {
+      0% { transform: translate(0, 0) rotate(45deg); opacity: 1; }
+      100% { transform: translate(-100vw, 100vh) rotate(45deg); opacity: 0; }
     }
 
     #playBtn {
       position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
+      inset: 0;
       background: transparent;
       border: none;
       cursor: pointer;
@@ -69,67 +92,74 @@
   </style>
 </head>
 <body>
-  <!-- Botón invisible para activar música -->
   <button id="playBtn" aria-label="Play"></button>
-
-  <!-- Música -->
   <audio id="bgMusic" loop>
     <source src="Morat.mp3" type="audio/mpeg">
   </audio>
 
   <script>
-    // Frases románticas
+    /* ---------- DATOS ---------- */
     const phrases = [
-      "Te Amo", "My love", "Eres preciosa", "Me encantas", "Amor de mi vida",
-      "Reina hermosa", "Mi niña", "Mi consentida", "No te quiero perder",
-      "te quiero cerca", "Mi mente, cuerpo, alma te reclaman", "Mi Biankita"
+      "Te Amo","My love","Eres preciosa","Me encantas","Amor de mi vida",
+      "Reina hermosa","Mi niña","Mi consentida","No te quiero perder",
+      "te quiero cerca","Mi mente, cuerpo, alma te reclaman","Mi Biankita"
     ];
-
-    // Fotos (las 6 que subiste)
     const fotos = [
-      "Multimedia%20(10).jpg",
-      "Multimedia%20(11).jpg",
-      "Multimedia%20(12).jpg",
-      "Multimedia%20(13).jpg",
-      "Multimedia%20(14).jpg",
-      "Multimedia%20(15).jpg"
+      "Multimedia%20(10).jpg","Multimedia%20(11).jpg","Multimedia%20(12).jpg",
+      "Multimedia%20(13).jpg","Multimedia%20(14).jpg","Multimedia%20(15).jpg"
     ];
 
-    // Música al clic
+    /* ---------- ESTRELLAS FIJAS ---------- */
+    for (let i = 0; i < 100; i++) {
+      const star = document.createElement('div');
+      star.className = 'star';
+      star.style.top = Math.random() * 100 + 'vh';
+      star.style.left = Math.random() * 100 + 'vw';
+      star.style.width = star.style.height = (Math.random() * 2 + 1) + 'px';
+      document.body.appendChild(star);
+    }
+
+    /* ---------- ESTRELLAS FUGACES ---------- */
+    function shootingStar() {
+      const star = document.createElement('div');
+      star.className = 'shooting-star';
+      star.style.top = Math.random() * 20 + 5 + 'vh';
+      star.style.left = '100vw';
+      document.body.appendChild(star);
+      star.addEventListener('animationend', () => star.remove());
+    }
+    setInterval(() => {
+      if (Math.random() < 0.4) shootingStar();
+    }, 2000);
+
+    /* ---------- MÚSICA ---------- */
+    const music   = document.getElementById('bgMusic');
     const playBtn = document.getElementById('playBtn');
-    const music = document.getElementById('bgMusic');
     playBtn.addEventListener('click', () => {
       music.play();
       playBtn.style.display = 'none';
     });
 
-    // Lanzar fotos (1 cada 3 s)
-    function lanzarFotos() {
+    /* ---------- LANZAR FOTOS Y FRASES ---------- */
+    function lanzar() {
+      // Foto
       const img = document.createElement('img');
-      img.className = 'photo';
+      img.className = 'item photo';
       img.src = fotos[Math.floor(Math.random() * fotos.length)];
-      img.style.left = Math.random() * 100 + 'vw';
+      img.style.setProperty('--rot', Math.random() * 60 - 30 + 'deg');
       document.body.appendChild(img);
-      setTimeout(() => img.remove(), 6000);
+      setTimeout(() => img.remove(), 3500);
+
+      // Frase
+      const word = document.createElement('div');
+      word.className = 'item text';
+      word.style.setProperty('--rot', Math.random() * 60 - 30 + 'deg');
+      word.innerText = phrases[Math.floor(Math.random() * phrases.length)];
+      document.body.appendChild(word);
+      setTimeout(() => word.remove(), 3500);
     }
 
-    // Lanzar frases (2 cada 2.5 s)
-    function lanzarFrases() {
-      for (let i = 0; i < 2; i++) {
-        const word = document.createElement('div');
-        word.className = 'word';
-        word.innerText = phrases[Math.floor(Math.random() * phrases.length)];
-        word.style.top  = Math.random() * 100 + 'vh';
-        word.style.left = Math.random() * 100 + 'vw';
-        word.style.animationDelay = i * 0.3 + 's';
-        document.body.appendChild(word);
-        setTimeout(() => word.remove(), 3000);
-      }
-    }
-
-    // Intervalos simultáneos
-    setInterval(lanzarFrases, 2500); // 2 frases
-    setInterval(lanzarFotos, 3000);  // 1 foto
+    setInterval(lanzar, 1200); // foto + frase cada 1.2 s
   </script>
 </body>
 </html>
