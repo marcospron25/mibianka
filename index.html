@@ -4,54 +4,27 @@
   <meta charset="UTF-8" />
   <title>Te Amo 💖</title>
   <style>
-    body{
-      margin:0;height:100vh;
-      background:radial-gradient(ellipse at bottom,#0a0a0a 0%,#000 100%);
-      overflow:hidden;font-family:'Comic Sans MS',cursive,sans-serif;color:white;
-      perspective:1000px;
-    }
-
-    /* Estrellas */
+    body{margin:0;height:100vh;background:radial-gradient(ellipse at bottom,#0a0a0a 0%,#000 100%);overflow:hidden;font-family:'Comic Sans MS',cursive,sans-serif;color:white;perspective:1000px}
     .star{position:absolute;width:2px;height:2px;background:white;border-radius:50%;opacity:.5;animation:twinkle 2s infinite}
     @keyframes twinkle{0%,100%{opacity:.5}50%{opacity:.1}}
-
     .shooting-star{position:fixed;width:3px;height:80px;background:linear-gradient(45deg,white,transparent);opacity:.8;border-radius:50%;filter:drop-shadow(0 0 6px white);animation:shoot 1.3s linear forwards}
     @keyframes shoot{0%{transform:translate(0,0) rotate(45deg);opacity:1}100%{transform:translate(-100vw,100vh) rotate(45deg);opacity:0}}
-
-    /* Elementos que PARTEN del centro y se acercan */
-    .item{position:absolute;top:50%;left:50%;opacity:0;transform:translate(-50%,-50%) translateZ(-100px) scale(.3);animation:comeClose 10s ease-out forwards;pointer-events:none}
-    .item.text{font-size:3em;text-shadow:0 0 12px #fff;white-space:nowrap}
+    .item{position:absolute;top:50%;left:50%;opacity:0;transform:translate(-50%,-50%) translateZ(-200px) scale(.3);animation:fly 15s linear forwards;pointer-events:none}
+    .item.text{font-size:2.8em;text-shadow:0 0 12px #fff;white-space:nowrap}
     .item.photo{width:220px;height:220px;object-fit:cover;border-radius:15px}
-
-    @keyframes comeClose{
-      0%  {opacity:0;transform:translate(-50%,-50%) translateZ(-100px) scale(.3)}
-      15% {opacity:1}
-      85% {opacity:1}
-      100%{opacity:0;transform:translate(calc(-50% + var(--dx)),calc(-50% + var(--dy))) translateZ(1600px) scale(2.2)}
-    }
-
+    @keyframes fly{0%{opacity:0;transform:translate(-50%,-50%) translateZ(-200px) scale(.3)}15%{opacity:1}85%{opacity:1}100%{opacity:0;transform:translate(calc(-50% + var(--dx)),calc(-50% + var(--dy))) translateZ(1800px) scale(2)}}
     #playBtn{position:fixed;inset:0;background:transparent;border:none;cursor:pointer;z-index:999}
   </style>
 </head>
 <body>
   <button id="playBtn" aria-label="Play"></button>
-  <audio id="bgMusic" loop>
-    <source src="Morat.mp3" type="audio/mpeg">
-  </audio>
+  <audio id="bgMusic" loop><source src="Morat.mp3" type="audio/mpeg"></audio>
 
   <script>
-    /* ---------- DATOS ---------- */
-    const phrases = [
-      "Te Amo","My love","Eres preciosa","Me encantas","Amor de mi vida",
-      "Reina hermosa","Mi niña","Mi consentida","No te quiero perder",
-      "te quiero cerca","Mi mente, cuerpo, alma te reclaman","Mi Biankita"
-    ];
-    const fotos = [
-      "Multimedia%20(10).jpg","Multimedia%20(11).jpg","Multimedia%20(12).jpg",
-      "Multimedia%20(13).jpg","Multimedia%20(14).jpg","Multimedia%20(15).jpg"
-    ];
+    const phrases = ["Te Amo","My love","Eres preciosa","Me encantas","Amor de mi vida","Reina hermosa","Mi niña","Mi consentida","No te quiero perder","te quiero cerca","Mi mente, cuerpo, alma te reclaman","Mi Biankita"];
+    const fotos = ["Multimedia%20(10).jpg","Multimedia%20(11).jpg","Multimedia%20(12).jpg","Multimedia%20(13).jpg","Multimedia%20(14).jpg","Multimedia%20(15).jpg"];
 
-    /* ---------- ESTRELLAS ---------- */
+    /* Estrellas y fugaces */
     for (let i = 0; i < 120; i++) {
       const star = document.createElement('div');
       star.className = 'star';
@@ -60,43 +33,32 @@
       star.style.width = star.style.height = (Math.random() * 2 + 1) + 'px';
       document.body.appendChild(star);
     }
-    setInterval(() => {
-      if (Math.random() < .3) {
-        const star = document.createElement('div');
-        star.className = 'shooting-star';
-        star.style.top = Math.random() * 20 + 5 + 'vh';
-        star.style.left = '100vw';
-        document.body.appendChild(star);
-        star.addEventListener('animationend', () => star.remove());
-      }
-    }, 2500);
+    setInterval(() => { if (Math.random() < .3) { const star = document.createElement('div'); star.className = 'shooting-star'; star.style.top = Math.random() * 20 + 5 + 'vh'; star.style.left = '100vw'; document.body.appendChild(star); star.addEventListener('animationend', () => star.remove()); } }, 2500);
 
-    /* ---------- MÚSICA ---------- */
+    /* Música al clic */
     const music = document.getElementById('bgMusic');
-    document.getElementById('playBtn').addEventListener('click', () => {
-      music.play();
-      playBtn.style.display = 'none';
-    });
+    document.getElementById('playBtn').addEventListener('click', () => { music.play(); playBtn.style.display = 'none'; });
 
-    /* ---------- EMISIÓN CONTINUA ---------- */
-    function lanzar() {
+    /* Lanzamiento CONTINUO */
+    let tanda = 0;
+    function lanzarContinuo() {
       // 1 foto
       const img = document.createElement('img');
       img.className = 'item photo';
       img.src = fotos[Math.floor(Math.random() * fotos.length)];
       setDireccion(img);
       document.body.appendChild(img);
-      setTimeout(() => img.remove(), 10000);
+      setTimeout(() => img.remove(), 15000);
 
-      // 4-5 frases
-      const cant = 4 + Math.floor(Math.random() * 2);
+      // 6-7 frases
+      const cant = 6 + Math.floor(Math.random() * 2);
       for (let i = 0; i < cant; i++) {
         const word = document.createElement('div');
         word.className = 'item text';
         word.innerText = phrases[Math.floor(Math.random() * phrases.length)];
-        setDireccion(word, i * 0.8);
+        setDireccion(word, i * 0.5);
         document.body.appendChild(word);
-        setTimeout(() => word.remove(), 10000);
+        setTimeout(() => word.remove(), 15000);
       }
     }
 
@@ -108,7 +70,8 @@
       el.style.animationDelay = delay + 's';
     }
 
-    setInterval(lanzar, 10000); // cada 10 segundos
+    /* Lanzar cada 2 segundos para que NUNCA haya pausa */
+    setInterval(lanzarContinuo, 2000);
   </script>
 </body>
 </html>
