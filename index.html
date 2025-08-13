@@ -3,9 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <title>Te Amo 💖</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dancing+Script&display=swap" />
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Dancing+Script&display=swap');
-
     body {
       margin: 0;
       height: 100vh;
@@ -21,20 +20,33 @@
       position: absolute;
       top: 50%;
       left: 50%;
-      transform: translate(-50%, -50%) translateZ(-1000px);
-      font-size: 3em;
-      color: #ffffff;
-      font-style: italic;
+      font-size: 2.5em;
+      color: #fff;
+      text-shadow: 0 0 10px #fff;
       opacity: 0;
-      white-space: nowrap;
-      text-shadow: 0 0 10px #ffffffaa;
-      animation: flyToFront 2.5s ease-out forwards;
+      transform: translate(-50%, -50%) translateZ(-1000px);
+      animation: flyToFront 3s ease-out forwards;
+      pointer-events: none;
+    }
+
+    .photo {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 220px;
+      height: 220px;
+      object-fit: cover;
+      border-radius: 12px;
+      opacity: 0;
+      transform: translate(-50%, -50%) translateZ(-1000px) scale(0.7);
+      animation: flyToFront 3s ease-out forwards;
+      pointer-events: none;
     }
 
     @keyframes flyToFront {
       0% {
-        transform: translate(-50%, -50%) translateZ(-1000px);
         opacity: 0;
+        transform: translate(-50%, -50%) translateZ(-1000px) scale(0.7);
       }
       30% {
         opacity: 1;
@@ -43,8 +55,8 @@
         opacity: 1;
       }
       100% {
-        transform: translate(-50%, -50%) translateZ(300px);
         opacity: 0;
+        transform: translate(-50%, -50%) translateZ(300px) scale(1);
       }
     }
 
@@ -63,7 +75,6 @@
       50% { opacity: 0.1; }
     }
 
-    /* Estrella fugaz */
     .shooting-star {
       position: fixed;
       width: 3px;
@@ -91,7 +102,13 @@
 </head>
 <body>
 
+<!-- Música de fondo -->
+<audio autoplay loop style="display:none;">
+  <source src="Morat.mp3" type="audio/mpeg">
+</audio>
+
 <script>
+  // Frases
   const phrases = [
     "Te Amo",
     "My love",
@@ -101,10 +118,21 @@
     "Reina hermosa",
     "Mi niña",
     "Mi consentida",
+    "No te quiero perder",
+    "te quiero cerca",
+    "Mi mente, cuerpo, alma te reclaman",
     "Mi Biankita"
+
   ];
 
-  // Crear estrellas de fondo normales
+  // Fotos
+  const fotos = [
+    "Multimedia%20(10).jpg",
+    "Multimedia%20(11).jpg",
+    "Multimedia%20(12).jpg"
+  ];
+
+  // Estrellas de fondo
   for (let i = 0; i < 100; i++) {
     const star = document.createElement('div');
     star.className = 'star';
@@ -114,38 +142,42 @@
     document.body.appendChild(star);
   }
 
-  // Crear palabras desde el fondo hacia ti
-  function launchWord() {
-    const word = document.createElement('div');
-    word.className = 'word';
-    word.innerText = phrases[Math.floor(Math.random() * phrases.length)];
-
-    word.style.top = (Math.random() * 100) + 'vh';
-    word.style.left = (Math.random() * 100) + 'vw';
-
-    document.body.appendChild(word);
-
-    setTimeout(() => word.remove(), 2500);
-  }
-
-  // Crear estrella fugaz
-  function launchShootingStar() {
+  // Lanzar estrella fugaz
+  function estrellaFugaz() {
     const star = document.createElement('div');
     star.className = 'shooting-star';
-
     star.style.top = (Math.random() * 20 + 5) + 'vh';
     star.style.left = '100vw';
-
     document.body.appendChild(star);
     star.addEventListener('animationend', () => star.remove());
   }
 
-  // Intervalos para lanzar elementos
-  setInterval(launchWord, 100); // palabras
-  setInterval(() => {
-    if (Math.random() < 0.3) launchShootingStar();
-  }, 1000);
+  // Lanzar frases y fotos simultáneamente
+  function lanzarContenido() {
+    // Frase
+    const word = document.createElement('div');
+    word.className = 'word';
+    word.innerText = phrases[Math.floor(Math.random() * phrases.length)];
+    word.style.top = (Math.random() * 100) + 'vh';
+    word.style.left = (Math.random() * 100) + 'vw';
+    document.body.appendChild(word);
+    setTimeout(() => word.remove(), 3000);
 
+    // Foto
+    const img = document.createElement('img');
+    img.className = 'photo';
+    img.src = fotos[Math.floor(Math.random() * fotos.length)];
+    img.style.top = (Math.random() * 100) + 'vh';
+    img.style.left = (Math.random() * 100) + 'vw';
+    document.body.appendChild(img);
+    setTimeout(() => img.remove(), 3000);
+  }
+
+  // Intervalos
+  setInterval(lanzarContenido, 2500); // frase + foto cada 2.5 s
+  setInterval(() => {
+    if (Math.random() < 0.3) estrellaFugaz();
+  }, 1000);
 </script>
 
 </body>
